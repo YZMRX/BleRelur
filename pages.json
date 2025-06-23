@@ -3,7 +3,20 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "智能靠尺"
+				"navigationBarTitleText": "智能靠尺",
+				"navigationBarBackgroundColor": "#F8F8F8",
+				"navigationStyle": "default",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue669",
+							"fontSrc": "static/icon/uniicons.ttf",
+							"fontSize": "25px",
+							"color": "#000000",
+							"float": "right"
+						}]
+					}
+				}
 			}
 		},
 		{
@@ -11,6 +24,13 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "连接设备"
+			}
+		},
+		{
+			"path" : "pages/about/about",
+			"style" : 
+			{
+				"navigationBarTitleText" : "关于我们"
 			}
 		},
 		{

@@ -1,0 +1,49 @@
+
+.about-container {
+	padding: 1.25rem;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.about-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.logo {
+	width: 6.25rem;
+	height: 6.25rem;
+	margin-bottom: 0.9375rem;
+}
+.app-name {
+	font-size: 1.125rem;
+	font-weight: bold;
+	margin-bottom: 0.625rem;
+}
+.version {
+	font-size: 0.875rem;
+	color: #666;
+	margin-bottom: 1.25rem;
+}
+.description {
+	text-align: center;
+	line-height: 1.6;
+	color: #333;
+	font-size: 0.875rem;
+	margin-bottom: 0.625rem;
+}
+.license {
+	text-align: center;
+	color: #666;
+	font-size: 0.8125rem;
+}
+.copyright {
+	text-align: center;
+	margin-bottom: 3.125rem;
+	color: #999;
+	font-size: 0.75rem;
+}
+.copyright uni-text {
+	text-decoration: none;
+}

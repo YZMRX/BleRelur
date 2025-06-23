@@ -177,6 +177,9 @@
   color: #999;
   margin-top: 0.25rem;
 }
+.title-bar {
+	padding: 0.625rem 0;
+}
 .device-status {
 	display: flex;
 	align-items: center;

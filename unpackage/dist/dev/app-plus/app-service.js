@@ -382,7 +382,7 @@ if (uni.restoreGlobal) {
     }
   }
   const bleManager = new BLEManager();
-  const _imports_0$2 = "/static/image/blu.png";
+  const _imports_0$3 = "/static/image/blu.png";
   const _imports_1$2 = "/static/image/next.png";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
@@ -391,7 +391,7 @@ if (uni.restoreGlobal) {
     }
     return target;
   };
-  const _sfc_main$a = {
+  const _sfc_main$b = {
     data() {
       return {
         projects: [],
@@ -404,6 +404,11 @@ if (uni.restoreGlobal) {
         isLoadingMore: false,
         deviceInfo: null
       };
+    },
+    onNavigationBarButtonTap(e) {
+      uni.navigateTo({
+        url: "/pages/about/about"
+      });
     },
     async onLoad(options) {
       await this.waitForDatabase();
@@ -490,16 +495,16 @@ if (uni.restoreGlobal) {
       async loaddata() {
         const app = getApp();
         if (!app || !app.globalData || !app.globalData.dbInitialized) {
-          formatAppLog("log", "at pages/index/index.vue:184", "数据库未初始化，跳过加载");
+          formatAppLog("log", "at pages/index/index.vue:190", "数据库未初始化，跳过加载");
           return;
         }
         if (this.isLoading) {
-          formatAppLog("log", "at pages/index/index.vue:189", "正在加载中，跳过重复加载");
+          formatAppLog("log", "at pages/index/index.vue:195", "正在加载中，跳过重复加载");
           return;
         }
         this.isLoading = true;
         try {
-          formatAppLog("log", "at pages/index/index.vue:195", "加载第", this.page, "页，每页", this.pageSize, "条");
+          formatAppLog("log", "at pages/index/index.vue:201", "加载第", this.page, "页，每页", this.pageSize, "条");
           const res = await this.selectTableDataByPage();
           if (this.page === 1) {
             this.projects = res;
@@ -508,7 +513,7 @@ if (uni.restoreGlobal) {
           }
           this.hasMore = res.length >= this.pageSize;
         } catch (error) {
-          formatAppLog("error", "at pages/index/index.vue:210", "数据载入失败：", error);
+          formatAppLog("error", "at pages/index/index.vue:216", "数据载入失败：", error);
           uni.showToast({
             title: "数据载入失败",
             icon: "none"
@@ -577,7 +582,7 @@ if (uni.restoreGlobal) {
             icon: "success"
           });
         } catch (err) {
-          formatAppLog("error", "at pages/index/index.vue:285", "删除失败", err);
+          formatAppLog("error", "at pages/index/index.vue:291", "删除失败", err);
           uni.showToast({
             title: "删除失败",
             icon: "none",
@@ -602,7 +607,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "main" }, [
       vue.createElementVNode("view", { class: "container" }, [
         vue.createCommentVNode(" 顶部标题 "),
@@ -615,7 +620,7 @@ if (uni.restoreGlobal) {
           onClick: _cache[0] || (_cache[0] = (...args) => $options.connectDevice && $options.connectDevice(...args))
         }, [
           vue.createElementVNode("image", {
-            src: _imports_0$2,
+            src: _imports_0$3,
             class: "device-icon",
             mode: "aspectFit"
           }),
@@ -763,8 +768,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/nhuProject/智能靠尺/pages/index/index.vue"]]);
-  const _sfc_main$9 = {
+  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/nhuProject/智能靠尺/pages/index/index.vue"]]);
+  const _sfc_main$a = {
     data() {
       return {
         devices: [],
@@ -1242,7 +1247,7 @@ if (uni.restoreGlobal) {
       this.startStatusCheck();
     }
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "header" }, [
         vue.createElementVNode("text", { class: "title" }, "附近蓝牙设备"),
@@ -1279,7 +1284,7 @@ if (uni.restoreGlobal) {
             }, [
               vue.createElementVNode("view", { class: "device-icon-box" }, [
                 vue.createElementVNode("image", {
-                  src: _imports_0$2,
+                  src: _imports_0$3,
                   class: "device-icon",
                   mode: "aspectFit"
                 })
@@ -1322,7 +1327,45 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesDeviceDevice = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/nhuProject/智能靠尺/pages/device/device.vue"]]);
+  const PagesDeviceDevice = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/nhuProject/智能靠尺/pages/device/device.vue"]]);
+  const _imports_0$2 = "/static/image/logo.png";
+  const _sfc_main$9 = {
+    data() {
+      return {};
+    },
+    methods: {
+      openGithub() {
+        plus.runtime.openURL("https://github.com/YZMRX/BleRelur");
+      }
+    }
+  };
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "about-container" }, [
+      vue.createElementVNode("view", { class: "about-content" }, [
+        vue.createElementVNode("image", {
+          src: _imports_0$2,
+          mode: "aspectFit",
+          class: "logo"
+        }),
+        vue.createElementVNode("text", { class: "app-name" }, "智能靠尺"),
+        vue.createElementVNode("text", { class: "version" }, "版本 1.0.0"),
+        vue.createElementVNode("view", { class: "description" }, [
+          vue.createElementVNode("text", null, "智能靠尺是一款专业的建筑测量工具，致力于提供精确的墙面测量服务。")
+        ])
+      ]),
+      vue.createElementVNode("view", {
+        class: "copyright",
+        onClick: _cache[0] || (_cache[0] = (...args) => $options.openGithub && $options.openGithub(...args))
+      }, [
+        vue.createElementVNode("text", null, [
+          vue.createTextVNode(" Copyright © 2025 by YZMRX "),
+          vue.createElementVNode("br"),
+          vue.createTextVNode(" All rights reserved ")
+        ])
+      ])
+    ]);
+  }
+  const PagesAboutAbout = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/nhuProject/智能靠尺/pages/about/about.vue"]]);
   const _imports_0$1 = "/static/image/csv.png";
   const _imports_1$1 = "/static/image/template.png";
   const _imports_2 = "/static/image/text.png";
@@ -6628,6 +6671,7 @@ if (uni.restoreGlobal) {
   const PagesNewProjectCsvPreviewPreview = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-4c95b366"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/csv/preview/preview.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
   __definePage("pages/device/device", PagesDeviceDevice);
+  __definePage("pages/about/about", PagesAboutAbout);
   __definePage("pages/newProject/newProject", PagesNewProjectNewProject);
   __definePage("pages/inProject/inProject", PagesInProjectInProject);
   __definePage("pages/test/test", PagesTestTest);
@@ -6680,14 +6724,11 @@ if (uni.restoreGlobal) {
       connected: false
     },
     onLaunch: function() {
-      formatAppLog("log", "at App.vue:15", "App Launch");
       this.initDatabase();
     },
     onShow: function() {
-      formatAppLog("log", "at App.vue:19", "App Show");
     },
     onHide: function() {
-      formatAppLog("log", "at App.vue:22", "App Hide");
     },
     methods: {
       async initDatabase() {
@@ -6697,12 +6738,12 @@ if (uni.restoreGlobal) {
           if (Config.isFirstLaunch()) {
             await this.initSampleData();
             Config.markLaunched();
-            formatAppLog("log", "at App.vue:34", "示例数据初始化完成");
+            formatAppLog("log", "at App.vue:32", "示例数据初始化完成");
           }
-          formatAppLog("log", "at App.vue:37", "数据库初始化完成");
+          formatAppLog("log", "at App.vue:35", "数据库初始化完成");
           this.globalData.dbInitialized = true;
         } catch (error) {
-          formatAppLog("error", "at App.vue:41", "数据库初始化失败:", error);
+          formatAppLog("error", "at App.vue:39", "数据库初始化失败:", error);
         }
       },
       deleteTable(table) {
@@ -6711,7 +6752,7 @@ if (uni.restoreGlobal) {
           sqliteUtil.deleteTable(table).then((res) => {
             this.showToast("删除表成功");
           }).catch((error) => {
-            formatAppLog("log", "at App.vue:52", "删除表失败", error);
+            formatAppLog("log", "at App.vue:50", "删除表失败", error);
           });
         } else {
           this.showToast("数据库未打开");
@@ -6720,13 +6761,13 @@ if (uni.restoreGlobal) {
       openSQL() {
         return new Promise((resolve, reject) => {
           let open = sqliteUtil.isOpen();
-          formatAppLog("log", "at App.vue:61", "数据库状态", open ? "开启" : "关闭");
+          formatAppLog("log", "at App.vue:59", "数据库状态", open ? "开启" : "关闭");
           if (!open) {
             sqliteUtil.openSqlite().then((res) => {
-              formatAppLog("log", "at App.vue:65", "数据库已打开");
+              formatAppLog("log", "at App.vue:63", "数据库已打开");
               resolve(res);
             }).catch((error) => {
-              formatAppLog("log", "at App.vue:69", "数据库开启失败");
+              formatAppLog("log", "at App.vue:67", "数据库开启失败");
               reject(error);
             });
           } else {
@@ -6751,7 +6792,7 @@ if (uni.restoreGlobal) {
 					"project_status" TEXT NOT NULL,
 					"inspection_status" TEXT NOT NULL
 				`);
-          formatAppLog("log", "at App.vue:96", "项目表创建成功");
+          formatAppLog("log", "at App.vue:94", "项目表创建成功");
           await sqliteUtil.createTable("wall_data", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 					"project_id" INTEGER NOT NULL,
@@ -6763,7 +6804,7 @@ if (uni.restoreGlobal) {
 					"measurements" TEXT DEFAULT '[]',
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:110", "墙体数据表创建成功");
+          formatAppLog("log", "at App.vue:108", "墙体数据表创建成功");
           await sqliteUtil.createTable("warning_settings", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 					"project_id" INTEGER NOT NULL,
@@ -6771,7 +6812,7 @@ if (uni.restoreGlobal) {
 					"flatness_warning" REAL,
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:120", "预警设置表创建成功");
+          formatAppLog("log", "at App.vue:118", "预警设置表创建成功");
           await sqliteUtil.createTable("sections", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 					"project_id" INTEGER NOT NULL,
@@ -6779,9 +6820,9 @@ if (uni.restoreGlobal) {
 					"sort_order" INTEGER,
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:130", "房间表创建成功");
+          formatAppLog("log", "at App.vue:128", "房间表创建成功");
         } catch (error) {
-          formatAppLog("error", "at App.vue:133", "创建数据库表失败:", error);
+          formatAppLog("error", "at App.vue:131", "创建数据库表失败:", error);
           throw error;
         }
       },
@@ -6844,9 +6885,9 @@ if (uni.restoreGlobal) {
           }
           await this.insertWarningSettings(project1Id, 2, 3);
           await this.insertWarningSettings(project2Id, 1.8, 2.8);
-          formatAppLog("log", "at App.vue:216", "示例数据添加成功");
+          formatAppLog("log", "at App.vue:214", "示例数据添加成功");
         } catch (error) {
-          formatAppLog("error", "at App.vue:218", "添加示例数据失败:", error);
+          formatAppLog("error", "at App.vue:216", "添加示例数据失败:", error);
           throw error;
         }
       },

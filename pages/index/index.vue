@@ -85,6 +85,12 @@ export default {
 		};
 	},
 
+	onNavigationBarButtonTap(e) {
+		uni.navigateTo({
+			url: '/pages/about/about'
+		});
+	},
+
 	async onLoad(options) {
 		// 等待数据库初始化
 		await this.waitForDatabase();
@@ -300,13 +306,18 @@ export default {
 			if (item.floor) result += '-' + item.floor;
 			if (item.room_number) result += '-' + item.room_number;
 			return result;
-		}
+		},
 	}
 };
 </script>
 
 <style>
 @import url("index.css");
+
+.title-bar {
+	padding: 20rpx 0;
+}
+
 .device-status {
 	display: flex;
 	align-items: center;
