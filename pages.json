@@ -1,0 +1,80 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "智能靠尺"
+			}
+		},
+		{
+			"path" : "pages/device/device",
+			"style" : 
+			{
+				"navigationBarTitleText" : "连接设备"
+			}
+		},
+		{
+			"path" : "pages/newProject/newProject",
+			"style" : 
+			{
+				"navigationBarTitleText" : "添加项目"
+			}
+		},
+		{
+			"path" : "pages/inProject/inProject",
+			"style" : 
+			{
+				"navigationBarTitleText" : "查看项目"
+			}
+		},
+		{
+			"path" : "pages/test/test",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/newProject/template/template",
+			"style" : 
+			{
+				"navigationBarTitleText" : "新建项目-模板"
+			}
+		},
+		{
+			"path" : "pages/newProject/csv/csv",
+			"style" : 
+			{
+				"navigationBarTitleText" : "新建项目-CSV"
+			}
+		},
+		{
+			"path" : "pages/newProject/text/text",
+			"style" : 
+			{
+				"navigationBarTitleText" : "新建项目-文本"
+			}
+		},
+		{
+			"path" : "pages/inProject/edit/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "编辑项目"
+			}
+		},
+		{
+			"path" : "pages/newProject/csv/preview/preview",
+			"style" : 
+			{
+				"navigationBarTitleText" : "导出预览"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}
