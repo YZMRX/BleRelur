@@ -12,14 +12,12 @@ export default {
 	},
 	
 	onLaunch: function () {
-		console.log('App Launch');
+
 		this.initDatabase();
 	},
 	onShow: function () {
-		console.log('App Show')
 	},
 	onHide: function () {
-		console.log('App Hide')
 	},
 	methods: {
 		async initDatabase() {
