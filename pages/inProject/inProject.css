@@ -213,17 +213,6 @@
     gap: 20rpx;
   }
   
-  .measure-btn {
-    font-size: 24rpx;
-    padding: 0 20rpx;
-    height: 60rpx;
-    line-height: 60rpx;
-    background-color: #007aff;
-    color: #fff;
-    border-radius: 8rpx;
-    margin: 0;
-  }
-  
   .data-row {
     padding: 20rpx 0;
     border-bottom: 2rpx solid #f5f5f5;
@@ -241,13 +230,6 @@
   
   .row:last-child {
     margin-bottom: 0;
-  }
-  
-  .label {
-    width: 120rpx;
-    font-size: 28rpx;
-    color: #333;
-    margin-right: 20rpx;
   }
   
   .input-unit-wrapper {
@@ -330,16 +312,13 @@
   .actions {
     display: flex;
     justify-content: space-between;
-    gap: 20rpx;
-    margin-top: 30rpx;
-    padding-top: 20rpx;
     border-top: 2rpx solid #f5f5f5;
   }
   
   .actions button {
     flex: 1;
-    height: 80rpx;
-    line-height: 80rpx;
+    height: 70rpx;
+    line-height: 70rpx;
     font-size: 28rpx;
     border-radius: 12rpx;
     border: none;

@@ -48,30 +48,37 @@
             <view class="measurements-list" v-if="wall.measurements && wall.measurements.length > 0">
               <view class="measurement-item" v-for="(measurement, index) in wall.measurements" :key="index">
                 <view class="measurement-header">
-                  <text class="measurement-time">{{ formatTime(measurement.timestamp) }}</text>
+                  <text class="measurement-index">第{{ index + 1 }}组测量值</text>
                   <text class="delete-measurement" @click="deleteMeasurement(wall, index)">×</text>
                 </view>
                 <view class="measurement-data">
-                  <view class="row" v-if="showSlope && measurement.slope !== null">
-                    <text class="label">坡度↔</text>
-                    <view class="input-unit-wrapper">
-                      <input 
-                        :class="['input', isOverWarning(measurement.slope, 'slope') ? 'warning' : '']" 
-                        :value="measurement.slope"
-                        @input="e => handleInput(wall, 'slope', e.detail.value, index)" 
-                        placeholder="请输入坡度" 
-                      />
-                      <text class="unit">mm/M</text>
+                  <view v-if="showSlope && measurement.values && measurement.values.length > 0" class="slope-values">
+                    <view v-for="(item, vIndex) in measurement.values" :key="vIndex" class="row">
+                      <view class="label-container">
+                        <text class="label">{{ getSlopeTypeText(item.type) }}</text>
+                        <text class="toggle-unit" @click="item.showAngle = !item.showAngle"><-></text>
+                      </view>
+                      <view class="input-unit-wrapper">
+                        <input 
+                          :class="['input', isOverWarning(item.showAngle ? item.angle : item.value, 'slope') ? 'warning' : '']" 
+                          :value="item.showAngle ? item.angle : item.value"
+                          @input="e => handleSlopeInput(wall, item, e.detail.value, index, vIndex)" 
+                          disabled
+                        />
+                        <text class="unit">{{ item.showAngle ? '°' : 'mm/M' }}</text>
+                      </view>
                     </view>
                   </view>
                   <view class="row" v-if="showFlatness && measurement.flatness !== null">
-                    <text class="label">平整度</text>
+                    <view class="label-container">
+                      <text class="label">平整度</text>
+                    </view>
                     <view class="input-unit-wrapper">
                       <input 
                         :class="['input', isOverWarning(measurement.flatness, 'flatness') ? 'warning' : '']"
                         :value="measurement.flatness"
                         @input="e => handleInput(wall, 'flatness', e.detail.value, index)"
-                        placeholder="请输入平整度"
+                        disabled
                       />
                       <text class="unit">mm</text>
                     </view>
@@ -140,6 +147,7 @@
             <input type="digit" class="setting-input" :value="warningSettings.flatnessWarning"
               @input="e => handleSettingInput('flatnessWarning', e.detail.value)" placeholder="请输入平整度预警值" />
           </view>
+          <button class="preset-manage-btn" @click="goToPresets">使用预设值</button>
         </view>
         <view class="popup-buttons">
           <button class="popup-btn cancel" @click="showSettings = false">取消</button>
@@ -224,6 +232,8 @@ export default {
       showWallNameInput: false,
       editingWallName: "",
       editingWall: null,
+      showAngle: false,
+      tempMeasureGroup: null,
       formatTime(timestamp) {
         if (!timestamp) return '';
         const date = new Date(timestamp);
@@ -239,6 +249,16 @@ export default {
     // 判断是否显示平整度输入框
     showFlatness() {
       return this.projectType === '平整度' || this.projectType === '坡度加平整度';
+    },
+    // 获取坡度类型显示文本
+    getSlopeTypeText() {
+      return (type) => {
+        switch(type) {
+          case 1: return '垂直度';
+          case 3: return '水平度';
+          default: return '坡度';
+        }
+      }
     }
   },
   methods: {
@@ -250,7 +270,9 @@ export default {
           "project_id" INTEGER NOT NULL,
           "section" TEXT NOT NULL,
           "wall_name" TEXT NOT NULL,
-          "slope" TEXT,
+          "slope_value" TEXT,
+          "slope_angle" TEXT,
+          "slope_type" INTEGER,
           "flatness" TEXT,
           "image" TEXT,
           "measurements" TEXT DEFAULT '[]',
@@ -263,14 +285,37 @@ export default {
     },
 
     // 添加删除单个测量数据的方法
-    deleteMeasurement(wall, index) {
+    async deleteMeasurement(wall, index) {
       uni.showModal({
         title: '确认删除',
         content: '是否删除这组测量数据？',
-        success: (res) => {
+        success: async (res) => {
           if (res.confirm) {
-            wall.measurements.splice(index, 1);
-            this.handleDataChange();
+            try {
+              // 从数组中删除测量数据
+              wall.measurements.splice(index, 1);
+              
+              // 立即更新数据库
+              const measurements = JSON.stringify(wall.measurements || []);
+              await DB.updateTableData(
+                'wall_data',
+                `measurements='${measurements}'`,
+                'id',
+                wall.id
+              );
+
+              // 显示成功提示
+              uni.showToast({
+                title: '删除成功',
+                icon: 'success'
+              });
+            } catch (error) {
+              console.error('删除测量数据失败:', error);
+              uni.showToast({
+                title: '删除失败',
+                icon: 'none'
+              });
+            }
           }
         }
       });
@@ -280,8 +325,6 @@ export default {
     async loadWallData() {
       try {
         const res = await DB.selectTableData('wall_data', { project_id: this.id });
-        console.log('加载到的墙体数据:', res);
-
         // 初始化每个房间的墙体数据为空数组
         this.sections.forEach(section => {
           this.sectionData[section] = [];
@@ -302,7 +345,9 @@ export default {
             // 使用Vue.set确保响应式更新
             const wallData = {
               name: item.wall_name,
-              slope: item.slope || "",
+              slope_value: item.slope_value || "",
+              slope_angle: item.slope_angle || "",
+              slope_type: item.slope_type || "",
               flatness: item.flatness || "",
               image: item.image || "",
               id: item.id,
@@ -310,7 +355,6 @@ export default {
             };
             
             this.sectionData[section].push(wallData);
-            console.log(`添加墙体数据到${section}:`, wallData);
           }
         });
 
@@ -348,8 +392,8 @@ export default {
               // 插入新数据
               await DB.insertTableData(
                 'wall_data',
-                `null,${this.id},'${section}','${wall.name}','${wall.slope || ""}','${wall.flatness || ""}','${wall.image || ""}','${measurements}'`,
-                'id,project_id,section,wall_name,slope,flatness,image,measurements'
+                `null,${this.id},'${section}','${wall.name}','${wall.slope_value || ""}','${wall.slope_angle || ""}','${wall.slope_type || ""}','${wall.flatness || ""}','${wall.image || ""}','${measurements}'`,
+                'id,project_id,section,wall_name,slope_value,slope_angle,slope_type,flatness,image,measurements'
               );
             }
           }
@@ -497,8 +541,8 @@ export default {
             const section = this.sections[this.currentIndex];
             await DB.insertTableData(
               'wall_data',
-              `null,${this.id},'${section}','${wall.name}','${wall.slope || ""}','${wall.flatness || ""}','${savedFilePath}'`,
-              'id,project_id,section,wall_name,slope,flatness,image'
+              `null,${this.id},'${section}','${wall.name}','${wall.slope_value || ""}','${wall.slope_angle || ""}','${wall.slope_type || ""}','${wall.flatness || ""}','${savedFilePath}'`,
+              'id,project_id,section,wall_name,slope_value,slope_angle,slope_type,flatness,image'
             );
 
             // 获取新插入数据的ID
@@ -563,7 +607,9 @@ export default {
 
           return {
             name: item.wall_name,
-            slope: item.slope || "",
+            slope_value: item.slope_value || "",
+            slope_angle: item.slope_angle || "",
+            slope_type: item.slope_type || "",
             flatness: item.flatness || "",
             image: item.image || "",
             id: item.id,
@@ -698,8 +744,8 @@ export default {
 
       try {
         // 立即保存到数据库
-        const insertFields = ['id', 'project_id', 'section', 'wall_name', 'slope', 'flatness', 'image'];
-        const insertValues = [`null`, `'${this.id}'`, `'${key}'`, `'${wallName}'`, `''`, `''`, `''`];
+        const insertFields = ['id', 'project_id', 'section', 'wall_name', 'slope_value', 'slope_angle', 'slope_type', 'flatness', 'image'];
+        const insertValues = [`null`, `'${this.id}'`, `'${key}'`, `'${wallName}'`, `''`, `''`, `''`, `''`, `''`];
 
         await DB.insertTableData(
           'wall_data',
@@ -724,7 +770,9 @@ export default {
         // 新增墙体数据到本地
         existingWalls.push({
           name: wallName,
-          slope: "",
+          slope_value: "",
+          slope_angle: "",
+          slope_type: "",
           flatness: "",
           image: "",
           id: newWallResult[0].id
@@ -877,7 +925,9 @@ export default {
               name: wall.name
             };
             if (this.showSlope) {
-              filteredWall.slope = wall.slope;
+              filteredWall.slope_value = wall.slope_value;
+              filteredWall.slope_angle = wall.slope_angle;
+              filteredWall.slope_type = wall.slope_type;
             }
             if (this.showFlatness) {
               filteredWall.flatness = wall.flatness;
@@ -887,11 +937,11 @@ export default {
             // 根据项目类型过滤数据
             const projectType = this.project.project_status;
             if (projectType === '坡度') {
-              return wall.slope;
+              return wall.slope_value;
             } else if (projectType === '平整度') {
               return wall.flatness;
             } else if (projectType === '坡度加平整度') {
-              return (this.showSlope && wall.slope) || (this.showFlatness && wall.flatness);
+              return (this.showSlope && wall.slope_value) || (this.showFlatness && wall.flatness);
             }
             return false;
           });
@@ -1112,6 +1162,20 @@ export default {
 
     handleSettingInput(field, value) {
       this.warningSettings[field] = value;
+    },
+
+    // 跳转到预设管理页面
+    goToPresets() {
+      uni.navigateTo({
+        url: '/pages/warning-presets/warning-presets',
+        fail: (err) => {
+          console.error('跳转失败:', err);
+          uni.showToast({
+            title: '跳转失败',
+            icon: 'none'
+          });
+        }
+      });
     },
 
     isOverWarning(value, type) {
@@ -1379,115 +1443,77 @@ export default {
 
         await new Promise((resolve, reject) => {
           uni.onBLECharacteristicValueChange((result) => {
-            const hex = Array.from(new Uint8Array(result.value))
-              .map(b => b.toString(16).padStart(2, '0'))
-              .join(' ');
-            
-            console.log('收到蓝牙数据：', {
-              hex,
-              buffer: result.value,
-              timestamp: new Date().toLocaleTimeString(),
-              characteristicId: result.characteristicId,
-              serviceId: result.serviceId
-            });
-
-            const value = this.parseBluetoothData(new Uint8Array(result.value));
-            if (value !== null && this.currentMeasureWall && this.isMeasuring) {
-              const isPzd = result.characteristicId.toLowerCase() === bleState.pzdCharacteristicId.toLowerCase() &&
-                          result.serviceId.toLowerCase() === bleState.serviceId.toLowerCase();
-              const isPd = result.characteristicId.toLowerCase() === bleState.pdCharacteristicId.toLowerCase() &&
-                         result.serviceId.toLowerCase() === bleState.serviceId2.toLowerCase();
-
-              // 确保measurements数组存在
+            const parsedData = this.parseBluetoothData(new Uint8Array(result.value));
+            if (parsedData && this.currentMeasureWall && this.isMeasuring) {
               if (!this.currentMeasureWall.measurements) {
                 this.currentMeasureWall.measurements = [];
               }
 
-              // 根据项目类型处理数据
-              if (this.projectType === '坡度加平整度') {
-                // 如果是新的测量或临时数据不存在，创建新的临时数据
-                if (!this.tempMeasurement) {
-                  this.tempMeasurement = {
-                    timestamp: new Date().toISOString(),
-                    slope: null,
-                    flatness: null
+              // 处理数据组合
+              if (!this.tempMeasureGroup) {
+                // 创建新的测量组
+                this.tempMeasureGroup = {
+                  timestamp: new Date().toISOString(),
+                  values: [],
+                  flatness: null
+                };
+              }
+
+              if (parsedData.type === 'slope') {
+                // 添加坡度数据
+                const existingIndex = this.tempMeasureGroup.values.findIndex(v => v.type === parsedData.data.type);
+                if (existingIndex >= 0) {
+                  // 更新已存在的同类型数据
+                  this.tempMeasureGroup.values[existingIndex] = {
+                    ...parsedData.data,
+                    showAngle: false
                   };
-                }
-
-                // 更新临时数据
-                if (isPzd && this.showFlatness) {
-                  console.log('收到平整度数据:', value);
-                  this.tempMeasurement.flatness = value;
-                  // 显示接收到平整度数据的提示
-                  uni.showToast({
-                    title: '已接收平整度',
-                    icon: 'none',
-                    duration: 1000
-                  });
-                } else if (isPd && this.showSlope) {
-                  console.log('收到坡度数据:', value);
-                  this.tempMeasurement.slope = value;
-                  // 显示接收到坡度数据的提示
-                  uni.showToast({
-                    title: '已接收坡度',
-                    icon: 'none',
-                    duration: 1000
-                  });
-                }
-
-                // 检查是否两个数据都已接收
-                const hasValidData = 
-                  (!this.showSlope || this.tempMeasurement.slope !== null) && 
-                  (!this.showFlatness || this.tempMeasurement.flatness !== null);
-
-                if (hasValidData) {
-                  // 添加完整的数据组
-                  this.currentMeasureWall.measurements.push({...this.tempMeasurement});
-                  this.handleDataChange();
-                  
-                  // 重置临时数据，准备接收下一组
-                  this.tempMeasurement = null;
-                  
-                  // 显示成功提示
-                  uni.showToast({
-                    title: '测量完成',
-                    icon: 'success',
-                    duration: 1500
-                  });
                 } else {
-                  // 如果还有数据未接收，显示等待提示
-                  let waitingFor = [];
-                  if (this.showSlope && this.tempMeasurement.slope === null) waitingFor.push('坡度');
-                  if (this.showFlatness && this.tempMeasurement.flatness === null) waitingFor.push('平整度');
-                  if (waitingFor.length > 0) {
-                    console.log(`等待接收: ${waitingFor.join('和')}`);
-                  }
-                }
-              } else {
-                // 对于单一类型的测量，检查是否是对应类型的数据
-                if ((this.projectType === '坡度' && isPd) || 
-                    (this.projectType === '平整度' && isPzd)) {
-                  let newMeasurement = {
-                    timestamp: new Date().toISOString(),
-                    slope: this.projectType === '坡度' ? value : null,
-                    flatness: this.projectType === '平整度' ? value : null
-                  };
-
-                  this.currentMeasureWall.measurements.push(newMeasurement);
-                  this.handleDataChange();
-
-                  // 显示成功提示
-                  uni.showToast({
-                    title: '测量完成',
-                    icon: 'success',
-                    duration: 1500
+                  // 添加新的坡度数据
+                  this.tempMeasureGroup.values.push({
+                    ...parsedData.data,
+                    showAngle: false
                   });
                 }
+                
+                // 显示接收提示
+                uni.showToast({
+                  title: `已接收${parsedData.data.type === 1 ? '垂直度' : '水平度'}`,
+                  icon: 'none',
+                  duration: 1000
+                });
+              } else if (parsedData.type === 'flatness') {
+                // 设置平整度数据
+                this.tempMeasureGroup.flatness = parsedData.data;
+                
+                // 显示接收提示
+                uni.showToast({
+                  title: '已接收平整度',
+                  icon: 'none',
+                  duration: 1000
+                });
+              }
+
+              // 检查是否需要保存测量组
+              const shouldSave = this.checkShouldSaveGroup();
+              if (shouldSave) {
+                // 保存完整的测量组
+                this.currentMeasureWall.measurements.push({...this.tempMeasureGroup});
+                this.handleDataChange();
+                
+                // 重置临时测量组
+                this.tempMeasureGroup = null;
+                
+                // 显示完成提示
+                uni.showToast({
+                  title: '测量完成',
+                  icon: 'success',
+                  duration: 1500
+                });
               }
             }
           });
 
-          // 开启特征值通知的代码保持不变...
         });
 
       } catch (error) {
@@ -1499,24 +1525,49 @@ export default {
     // 解析蓝牙数据
     parseBluetoothData(value) {
       try {
-        // 打印原始字节数组
-        console.log('原始数据字节数组:', Array.from(value).map(b => b.toString(16).padStart(2, '0')));
-        
-        // 将ArrayBuffer转换为字符串
         let result = '';
         for (let i = 0; i < value.length; i++) {
           result += String.fromCharCode(value[i]);
         }
-        console.log('转换后的字符串:', result);
+        console.log('收到的原始字符串:', result);
         
-        // 转换为数字并保留两位小数
-        const number = parseFloat(result);
-        console.log('解析后的数字:', number);
+        const parts = result.split(',').map(part => part.trim());
+        const type = parseInt(parts[0]);
+        if (isNaN(type)) return null;
         
-        const finalResult = isNaN(number) ? null : number.toFixed(2);
-        console.log('最终结果:', finalResult);
+        switch(type) {
+          case 1: // 垂直度偏差值
+          case 3: // 水平度偏差值
+            if (parts.length >= 4) {
+              const deviation = parseFloat(parts[1]); // 偏差值
+              const angle = parseFloat(parts[3]);    // 角度
+              if (!isNaN(deviation) && !isNaN(angle)) {
+                return {
+                  type: 'slope',
+                  data: {
+                    type: type,
+                    value: deviation.toFixed(2),
+                    angle: angle.toFixed(2)
+                  }
+                };
+              }
+            }
+            break;
+            
+          case 5: // 平整度
+            if (parts.length >= 2) {
+              const flatness = parseFloat(parts[1]);
+              if (!isNaN(flatness)) {
+                return {
+                  type: 'flatness',
+                  data: flatness.toFixed(2)
+                };
+              }
+            }
+            break;
+        }
         
-        return finalResult;
+        return null;
       } catch (error) {
         console.error('解析数据失败:', error);
         return null;
@@ -1648,6 +1699,40 @@ export default {
         });
       }
     },
+
+    // 处理坡度输入
+    handleSlopeInput(wall, item, value, measurementIndex, valueIndex) {
+      if (item.showAngle) {
+        wall.measurements[measurementIndex].values[valueIndex].angle = value;
+      } else {
+        wall.measurements[measurementIndex].values[valueIndex].value = value;
+      }
+      this.handleDataChange();
+    },
+
+    // 添加检查是否应该保存测量组的方法
+    checkShouldSaveGroup() {
+      if (!this.tempMeasureGroup) return false;
+
+      // 根据项目类型检查数据完整性
+      switch (this.projectType) {
+        case '坡度':
+          // 只需要有坡度数据
+          return this.tempMeasureGroup.values.length > 0;
+          
+        case '平整度':
+          // 只需要有平整度数据
+          return this.tempMeasureGroup.flatness !== null;
+          
+        case '坡度加平整度':
+          // 需要同时有坡度和平整度数据
+          return this.tempMeasureGroup.values.length > 0 && 
+                 this.tempMeasureGroup.flatness !== null;
+          
+        default:
+          return false;
+      }
+    },
   },
   onLoad(options) {
     console.log('onLoad options:', options);
@@ -1686,7 +1771,7 @@ export default {
 .measurement-item {
   background-color: #f8f8f8;
   border-radius: 8rpx;
-  padding: 16rpx;
+  padding: 10rpx;
   margin-bottom: 16rpx;
 }
 
@@ -1697,22 +1782,20 @@ export default {
   margin-bottom: 10rpx;
 }
 
-.measurement-time {
-  font-size: 24rpx;
-  color: #666;
+.measurement-index {
+  font-size: 20rpx;
+  color: #333;
 }
 
 .delete-measurement {
-  font-size: 32rpx;
+  font-size: 28rpx;
   color: #ff4444;
-  padding: 0 10rpx;
   cursor: pointer;
 }
 
 .measurement-data {
   background-color: #fff;
   border-radius: 6rpx;
-  padding: 10rpx;
 }
 
 .wall-card {
@@ -1753,11 +1836,154 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 10rpx;
 }
 
 .wall-title {
   font-size: 32rpx;
   font-weight: bold;
+}
+
+.toggle-unit {
+  color: #007aff;
+  padding: 0;
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+
+.toggle-unit:active {
+  opacity: 0.7;
+}
+
+.slope-values {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20rpx;
+  margin-bottom: 5rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.label-container {
+  display: flex;
+  align-items: center;
+  min-width: 100rpx;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #333;
+  white-space: nowrap;
+}
+
+.input-unit-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: #f8f8f8;
+  border-radius: 6rpx;
+  padding: 0 20rpx;
+  min-width: 160rpx;
+  flex-shrink: 0;
+}
+
+.input {
+  width: 100rpx;
+  text-align: right;
+  margin-right: 10rpx;
+  font-size: 30rpx;
+}
+
+.unit {
+  font-size: 24rpx;
+  color: #666;
+  margin-left: 10rpx;
+  white-space: nowrap;
+}
+
+.warning {
+  color: #ff4444;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  border-top: 1rpx solid #eee;
+  margin-top: 20rpx;
+}
+
+.popup-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.popup-btn.preset {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.popup-btn.cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.popup-btn.confirm {
+  background-color: #007aff;
+  color: #fff;
+}
+
+.settings-popup {
+  width: 90%;
+  max-width: 600rpx;
+  padding: 30rpx;
+}
+
+.setting-item {
+  margin-bottom: 20rpx;
+}
+
+.setting-label {
+  font-size: 28rpx;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.setting-input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+
+.preset-manage-btn {
+  width: 50%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  background-color: #007aff;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
+
+.preset-manage-btn:active {
+  opacity: 0.8;
 }
 </style>

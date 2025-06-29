@@ -12,7 +12,6 @@ export default {
 	},
 	
 	onLaunch: function () {
-
 		this.initDatabase();
 	},
 	onShow: function () {
@@ -44,13 +43,13 @@ export default {
 				if (open) {
 					DB.deleteTable(table)
 						.then(res => {
-							this.showToast("删除表成功");
+							console.log("删除表成功");
 						})
 						.catch(error => {
 							console.log("删除表失败", error);
 						});
 				} else {
-					this.showToast("数据库未打开");
+					console.log("数据库未打开");
 				}
 			},
 		openSQL() {
@@ -96,14 +95,16 @@ export default {
 				// 创建墙体数据表
 				await DB.createTable('wall_data', `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-					"project_id" INTEGER NOT NULL,
-					"section" TEXT,
-					"wall_name" TEXT NOT NULL,
-					"slope" TEXT,
-					"flatness" TEXT,
-					"image" TEXT,
-					"measurements" TEXT DEFAULT '[]',
-					FOREIGN KEY(project_id) REFERENCES project(id)
+                    "project_id" INTEGER NOT NULL,
+                    "section" TEXT NOT NULL,
+                    "wall_name" TEXT NOT NULL,
+                    "slope_value" TEXT,
+          			"slope_angle" TEXT,
+          			"slope_type" INTEGER,
+          			"flatness" TEXT,
+          			"image" TEXT,
+          			"measurements" TEXT DEFAULT '[]',
+          			FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
 				console.log('墙体数据表创建成功');
 				
@@ -126,6 +127,15 @@ export default {
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
 				console.log('房间表创建成功');
+				
+				// 创建预警预设表
+				await DB.createTable('warning_presets', `
+					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+					"name" TEXT NOT NULL,
+					"slope_warning" REAL,
+					"flatness_warning" REAL
+				`);
+				console.log('预警预设表创建成功');
 				
 			} catch (error) {
 				console.error('创建数据库表失败:', error);

@@ -88,6 +88,12 @@
 			{
 				"navigationBarTitleText" : "导出预览"
 			}
+		},
+		{
+			"path": "pages/warning-presets/warning-presets",
+			"style": {
+				"navigationBarTitleText": "预警值预设管理"
+			}
 		}
 	],
 	"globalStyle": {

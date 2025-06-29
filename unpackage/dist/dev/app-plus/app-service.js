@@ -391,7 +391,7 @@ if (uni.restoreGlobal) {
     }
     return target;
   };
-  const _sfc_main$b = {
+  const _sfc_main$c = {
     data() {
       return {
         projects: [],
@@ -607,7 +607,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "main" }, [
       vue.createElementVNode("view", { class: "container" }, [
         vue.createCommentVNode(" 顶部标题 "),
@@ -768,8 +768,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/nhuProject/智能靠尺/pages/index/index.vue"]]);
-  const _sfc_main$a = {
+  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$b], ["__file", "D:/nhuProject/智能靠尺/pages/index/index.vue"]]);
+  const _sfc_main$b = {
     data() {
       return {
         devices: [],
@@ -994,15 +994,12 @@ if (uni.restoreGlobal) {
               formatAppLog("log", "at pages/device/device.vue:279", `服务${index + 1} UUID: ${service.uuid}`);
             });
             const service7 = res.services[6];
-            const service8 = res.services[7];
-            if (service7 && service8) {
-              formatAppLog("log", "at pages/device/device.vue:287", "找到目标服务：", {
-                "坡度服务(7)": service7.uuid,
-                "平整度服务(8)": service8.uuid
+            if (service7) {
+              formatAppLog("log", "at pages/device/device.vue:286", "找到目标服务：", {
+                "数据服务(7)": service7.uuid
               });
               bleManager.setServiceId2(service7.uuid);
-              bleManager.setServiceId(service8.uuid);
-              formatAppLog("log", "at pages/device/device.vue:295", "设置服务ID后的状态：", bleManager.getState());
+              formatAppLog("log", "at pages/device/device.vue:293", "设置服务ID后的状态：", bleManager.getState());
               uni.getBLEDeviceCharacteristics({
                 deviceId,
                 serviceId: service7.uuid,
@@ -1011,60 +1008,29 @@ if (uni.restoreGlobal) {
                     uuid: c.uuid,
                     properties: c.properties
                   }));
-                  formatAppLog("log", "at pages/device/device.vue:306", "服务7（坡度）特征值列表：", charList);
+                  formatAppLog("log", "at pages/device/device.vue:304", "服务7特征值列表：", charList);
                   if (res2.characteristics && res2.characteristics.length > 0) {
-                    const pdCharacteristic = res2.characteristics[0];
-                    formatAppLog("log", "at pages/device/device.vue:310", "设置坡度特征值：", pdCharacteristic.uuid);
-                    bleManager.setPdCharacteristicId(pdCharacteristic.uuid);
-                    uni.getBLEDeviceCharacteristics({
-                      deviceId,
-                      serviceId: service8.uuid,
-                      success: (res22) => {
-                        const charList2 = res22.characteristics.map((c) => ({
-                          uuid: c.uuid,
-                          properties: c.properties
-                        }));
-                        formatAppLog("log", "at pages/device/device.vue:322", "服务8（平整度）特征值列表：", charList2);
-                        if (res22.characteristics && res22.characteristics.length > 0) {
-                          const pzdCharacteristic = res22.characteristics[0];
-                          formatAppLog("log", "at pages/device/device.vue:326", "设置平整度特征值：", pzdCharacteristic.uuid);
-                          bleManager.setPzdCharacteristicId(pzdCharacteristic.uuid);
-                          formatAppLog("log", "at pages/device/device.vue:329", "最终蓝牙状态：", bleManager.getState());
-                          this.enableNotify(deviceId, service7.uuid, pdCharacteristic.uuid);
-                          this.enableNotify(deviceId, service8.uuid, pzdCharacteristic.uuid);
-                          setTimeout(() => {
-                            uni.navigateBack();
-                          }, 1e3);
-                        } else {
-                          uni.showModal({
-                            title: "连接失败",
-                            content: "未找到平整度特征值",
-                            showCancel: false
-                          });
-                        }
-                      },
-                      fail: (err) => {
-                        formatAppLog("error", "at pages/device/device.vue:347", "获取平整度特征值失败", err);
-                        uni.showModal({
-                          title: "连接失败",
-                          content: "获取平整度特征值失败",
-                          showCancel: false
-                        });
-                      }
-                    });
+                    const dataCharacteristic = res2.characteristics[0];
+                    formatAppLog("log", "at pages/device/device.vue:308", "设置数据特征值：", dataCharacteristic.uuid);
+                    bleManager.setPdCharacteristicId(dataCharacteristic.uuid);
+                    formatAppLog("log", "at pages/device/device.vue:311", "最终蓝牙状态：", bleManager.getState());
+                    this.enableNotify(deviceId, service7.uuid, dataCharacteristic.uuid);
+                    setTimeout(() => {
+                      uni.navigateBack();
+                    }, 1e3);
                   } else {
                     uni.showModal({
                       title: "连接失败",
-                      content: "未找到坡度特征值",
+                      content: "未找到数据特征值",
                       showCancel: false
                     });
                   }
                 },
                 fail: (err) => {
-                  formatAppLog("error", "at pages/device/device.vue:364", "获取坡度特征值失败", err);
+                  formatAppLog("error", "at pages/device/device.vue:328", "获取特征值失败", err);
                   uni.showModal({
                     title: "连接失败",
-                    content: "获取坡度特征值失败",
+                    content: "获取特征值失败",
                     showCancel: false
                   });
                 }
@@ -1078,7 +1044,7 @@ if (uni.restoreGlobal) {
             }
           },
           fail: (err) => {
-            formatAppLog("error", "at pages/device/device.vue:381", "获取服务失败", err);
+            formatAppLog("error", "at pages/device/device.vue:345", "获取服务失败", err);
             uni.showModal({
               title: "连接失败",
               content: "获取设备服务失败",
@@ -1088,7 +1054,7 @@ if (uni.restoreGlobal) {
         });
       },
       enableNotify(deviceId, serviceId, characteristicId) {
-        formatAppLog("log", "at pages/device/device.vue:392", "开启通知，参数：", {
+        formatAppLog("log", "at pages/device/device.vue:356", "开启通知，参数：", {
           deviceId,
           serviceId,
           characteristicId
@@ -1099,11 +1065,11 @@ if (uni.restoreGlobal) {
           characteristicId,
           state: true,
           success: () => {
-            formatAppLog("log", "at pages/device/device.vue:404", "监听特征值变化开启成功");
+            formatAppLog("log", "at pages/device/device.vue:368", "监听特征值变化开启成功");
             bleManager.setNotifyEnabled(true);
           },
           fail: (err) => {
-            formatAppLog("error", "at pages/device/device.vue:408", "开启监听失败", err);
+            formatAppLog("error", "at pages/device/device.vue:372", "开启监听失败", err);
             uni.showModal({
               title: "提示",
               content: "开启数据监听失败，请重新连接设备",
@@ -1123,7 +1089,7 @@ if (uni.restoreGlobal) {
               resolve();
             },
             fail: (err) => {
-              formatAppLog("error", "at pages/device/device.vue:429", "断开连接失败:", err);
+              formatAppLog("error", "at pages/device/device.vue:393", "断开连接失败:", err);
               this.connectedDeviceId = null;
               bleManager.clear();
               resolve();
@@ -1132,7 +1098,7 @@ if (uni.restoreGlobal) {
         });
       },
       updateDeviceStatus(deviceId, status) {
-        formatAppLog("log", "at pages/device/device.vue:439", "更新设备状态:", deviceId, status);
+        formatAppLog("log", "at pages/device/device.vue:403", "更新设备状态:", deviceId, status);
         const device = this.devices.find((item) => item.deviceId === deviceId);
         if (device) {
           device.status = status;
@@ -1151,7 +1117,7 @@ if (uni.restoreGlobal) {
       },
       async syncConnectedStatus() {
         const bleState = bleManager.getState();
-        formatAppLog("log", "at pages/device/device.vue:461", "当前蓝牙状态:", bleState);
+        formatAppLog("log", "at pages/device/device.vue:425", "当前蓝牙状态:", bleState);
         if (bleState.connected && bleState.deviceId) {
           this.connectedDeviceId = bleState.deviceId;
           const existingDevice = this.devices.find((d) => d.deviceId === bleState.deviceId);
@@ -1168,7 +1134,7 @@ if (uni.restoreGlobal) {
                 });
               }
             } catch (error) {
-              formatAppLog("error", "at pages/device/device.vue:480", "获取设备信息失败:", error);
+              formatAppLog("error", "at pages/device/device.vue:444", "获取设备信息失败:", error);
             }
           }
         } else {
@@ -1216,7 +1182,7 @@ if (uni.restoreGlobal) {
         }, 3e3);
       },
       handleDisconnect() {
-        formatAppLog("log", "at pages/device/device.vue:532", "检测到设备断开");
+        formatAppLog("log", "at pages/device/device.vue:496", "检测到设备断开");
         if (this.connectedDeviceId) {
           this.updateDeviceStatus(this.connectedDeviceId, "未连接");
         }
@@ -1239,7 +1205,7 @@ if (uni.restoreGlobal) {
       }
     },
     onShow() {
-      formatAppLog("log", "at pages/device/device.vue:556", "设备页面显示");
+      formatAppLog("log", "at pages/device/device.vue:520", "设备页面显示");
       this.syncConnectedStatus();
       if (this.devices.length === 0) {
         this.startBluetoothDiscovery();
@@ -1247,7 +1213,7 @@ if (uni.restoreGlobal) {
       this.startStatusCheck();
     }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "header" }, [
         vue.createElementVNode("text", { class: "title" }, "附近蓝牙设备"),
@@ -1327,9 +1293,9 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesDeviceDevice = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/nhuProject/智能靠尺/pages/device/device.vue"]]);
+  const PagesDeviceDevice = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$a], ["__file", "D:/nhuProject/智能靠尺/pages/device/device.vue"]]);
   const _imports_0$2 = "/static/image/logo.png";
-  const _sfc_main$9 = {
+  const _sfc_main$a = {
     data() {
       return {};
     },
@@ -1339,7 +1305,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "about-container" }, [
       vue.createElementVNode("view", { class: "about-content" }, [
         vue.createElementVNode("image", {
@@ -1365,11 +1331,11 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesAboutAbout = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__file", "D:/nhuProject/智能靠尺/pages/about/about.vue"]]);
+  const PagesAboutAbout = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$9], ["__file", "D:/nhuProject/智能靠尺/pages/about/about.vue"]]);
   const _imports_0$1 = "/static/image/csv.png";
   const _imports_1$1 = "/static/image/template.png";
   const _imports_2 = "/static/image/text.png";
-  const _sfc_main$8 = {
+  const _sfc_main$9 = {
     methods: {
       select(type) {
         if (type === "csv") {
@@ -1382,7 +1348,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "header" }),
       vue.createElementVNode("view", { class: "tip" }, "请选择创建方式"),
@@ -1429,7 +1395,7 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesNewProjectNewProject = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__scopeId", "data-v-03c28405"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/newProject.vue"]]);
+  const PagesNewProjectNewProject = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$8], ["__scopeId", "data-v-03c28405"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/newProject.vue"]]);
   const csvUtils = {
     /**
      * 生成CSV内容
@@ -1694,7 +1660,7 @@ if (uni.restoreGlobal) {
   };
   const _imports_0 = "/static/image/edit.png";
   const _imports_1 = "/static/image/config.png";
-  const _sfc_main$7 = {
+  const _sfc_main$8 = {
     data() {
       return {
         fullAddress: "",
@@ -1727,6 +1693,8 @@ if (uni.restoreGlobal) {
         showWallNameInput: false,
         editingWallName: "",
         editingWall: null,
+        showAngle: false,
+        tempMeasureGroup: null,
         formatTime(timestamp) {
           if (!timestamp)
             return "";
@@ -1743,6 +1711,19 @@ if (uni.restoreGlobal) {
       // 判断是否显示平整度输入框
       showFlatness() {
         return this.projectType === "平整度" || this.projectType === "坡度加平整度";
+      },
+      // 获取坡度类型显示文本
+      getSlopeTypeText() {
+        return (type) => {
+          switch (type) {
+            case 1:
+              return "垂直度";
+            case 3:
+              return "水平度";
+            default:
+              return "坡度";
+          }
+        };
       }
     },
     methods: {
@@ -1754,26 +1735,46 @@ if (uni.restoreGlobal) {
           "project_id" INTEGER NOT NULL,
           "section" TEXT NOT NULL,
           "wall_name" TEXT NOT NULL,
-          "slope" TEXT,
+          "slope_value" TEXT,
+          "slope_angle" TEXT,
+          "slope_type" INTEGER,
           "flatness" TEXT,
           "image" TEXT,
           "measurements" TEXT DEFAULT '[]',
           FOREIGN KEY(project_id) REFERENCES project(id)
         `);
-          formatAppLog("log", "at pages/inProject/inProject.vue:259", "墙体数据表创建成功");
+          formatAppLog("log", "at pages/inProject/inProject.vue:281", "墙体数据表创建成功");
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:261", "创建墙体数据表失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:283", "创建墙体数据表失败:", error);
         }
       },
       // 添加删除单个测量数据的方法
-      deleteMeasurement(wall, index) {
+      async deleteMeasurement(wall, index) {
         uni.showModal({
           title: "确认删除",
           content: "是否删除这组测量数据？",
-          success: (res) => {
+          success: async (res) => {
             if (res.confirm) {
-              wall.measurements.splice(index, 1);
-              this.handleDataChange();
+              try {
+                wall.measurements.splice(index, 1);
+                const measurements = JSON.stringify(wall.measurements || []);
+                await sqliteUtil.updateTableData(
+                  "wall_data",
+                  `measurements='${measurements}'`,
+                  "id",
+                  wall.id
+                );
+                uni.showToast({
+                  title: "删除成功",
+                  icon: "success"
+                });
+              } catch (error) {
+                formatAppLog("error", "at pages/inProject/inProject.vue:313", "删除测量数据失败:", error);
+                uni.showToast({
+                  title: "删除失败",
+                  icon: "none"
+                });
+              }
             }
           }
         });
@@ -1782,7 +1783,6 @@ if (uni.restoreGlobal) {
       async loadWallData() {
         try {
           const res = await sqliteUtil.selectTableData("wall_data", { project_id: this.id });
-          formatAppLog("log", "at pages/inProject/inProject.vue:283", "加载到的墙体数据:", res);
           this.sections.forEach((section) => {
             this.sectionData[section] = [];
           });
@@ -1793,24 +1793,25 @@ if (uni.restoreGlobal) {
               try {
                 measurements = JSON.parse(item.measurements || "[]");
               } catch (e) {
-                formatAppLog("error", "at pages/inProject/inProject.vue:298", "解析测量数据失败:", e);
+                formatAppLog("error", "at pages/inProject/inProject.vue:341", "解析测量数据失败:", e);
                 measurements = [];
               }
               const wallData = {
                 name: item.wall_name,
-                slope: item.slope || "",
+                slope_value: item.slope_value || "",
+                slope_angle: item.slope_angle || "",
+                slope_type: item.slope_type || "",
                 flatness: item.flatness || "",
                 image: item.image || "",
                 id: item.id,
                 measurements
               };
               this.sectionData[section].push(wallData);
-              formatAppLog("log", "at pages/inProject/inProject.vue:313", `添加墙体数据到${section}:`, wallData);
             }
           });
           this.$forceUpdate();
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:321", "加载墙体数据失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:365", "加载墙体数据失败:", error);
           uni.showToast({
             title: "加载数据失败",
             icon: "none"
@@ -1836,16 +1837,16 @@ if (uni.restoreGlobal) {
               } else {
                 await sqliteUtil.insertTableData(
                   "wall_data",
-                  `null,${this.id},'${section}','${wall.name}','${wall.slope || ""}','${wall.flatness || ""}','${wall.image || ""}','${measurements}'`,
-                  "id,project_id,section,wall_name,slope,flatness,image,measurements"
+                  `null,${this.id},'${section}','${wall.name}','${wall.slope_value || ""}','${wall.slope_angle || ""}','${wall.slope_type || ""}','${wall.flatness || ""}','${wall.image || ""}','${measurements}'`,
+                  "id,project_id,section,wall_name,slope_value,slope_angle,slope_type,flatness,image,measurements"
                 );
               }
             }
           }
           this.pendingSave = false;
-          formatAppLog("log", "at pages/inProject/inProject.vue:359", "自动保存成功");
+          formatAppLog("log", "at pages/inProject/inProject.vue:403", "自动保存成功");
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:361", "自动保存失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:405", "自动保存失败:", error);
           uni.showToast({
             title: "保存失败",
             icon: "none"
@@ -1875,8 +1876,8 @@ if (uni.restoreGlobal) {
       async saveImageToLocal(tempFilePath) {
         try {
           const platform = uni.getSystemInfoSync().platform;
-          formatAppLog("log", "at pages/inProject/inProject.vue:399", "当前平台:", platform);
-          formatAppLog("log", "at pages/inProject/inProject.vue:400", "临时文件路径:", tempFilePath);
+          formatAppLog("log", "at pages/inProject/inProject.vue:443", "当前平台:", platform);
+          formatAppLog("log", "at pages/inProject/inProject.vue:444", "临时文件路径:", tempFilePath);
           if (platform === "android" || platform === "ios") {
             return new Promise((resolve, reject) => {
               const timestamp = (/* @__PURE__ */ new Date()).getTime();
@@ -1884,27 +1885,27 @@ if (uni.restoreGlobal) {
               const ext = tempFilePath.substring(tempFilePath.lastIndexOf("."));
               const fileName = `${timestamp}_${random}${ext}`;
               const targetPath = `_doc/images/${fileName}`;
-              formatAppLog("log", "at pages/inProject/inProject.vue:413", "目标保存路径:", targetPath);
+              formatAppLog("log", "at pages/inProject/inProject.vue:457", "目标保存路径:", targetPath);
               plus.io.resolveLocalFileSystemURL("_doc/", (rootEntry) => {
                 rootEntry.getDirectory("images", { create: true }, (dirEntry) => {
                   plus.io.resolveLocalFileSystemURL(tempFilePath, (entry) => {
                     entry.copyTo(dirEntry, fileName, () => {
-                      formatAppLog("log", "at pages/inProject/inProject.vue:421", "文件保存成功:", targetPath);
+                      formatAppLog("log", "at pages/inProject/inProject.vue:465", "文件保存成功:", targetPath);
                       resolve(targetPath);
                     }, (e) => {
-                      formatAppLog("error", "at pages/inProject/inProject.vue:424", "复制文件失败:", e);
+                      formatAppLog("error", "at pages/inProject/inProject.vue:468", "复制文件失败:", e);
                       reject(e);
                     });
                   }, (e) => {
-                    formatAppLog("error", "at pages/inProject/inProject.vue:428", "解析源文件失败:", e);
+                    formatAppLog("error", "at pages/inProject/inProject.vue:472", "解析源文件失败:", e);
                     reject(e);
                   });
                 }, (e) => {
-                  formatAppLog("error", "at pages/inProject/inProject.vue:432", "创建目录失败:", e);
+                  formatAppLog("error", "at pages/inProject/inProject.vue:476", "创建目录失败:", e);
                   reject(e);
                 });
               }, (e) => {
-                formatAppLog("error", "at pages/inProject/inProject.vue:436", "获取根目录失败:", e);
+                formatAppLog("error", "at pages/inProject/inProject.vue:480", "获取根目录失败:", e);
                 reject(e);
               });
             });
@@ -1912,11 +1913,11 @@ if (uni.restoreGlobal) {
             const res = await uni.saveFile({
               tempFilePath
             });
-            formatAppLog("log", "at pages/inProject/inProject.vue:445", "H5环境保存文件结果:", res);
+            formatAppLog("log", "at pages/inProject/inProject.vue:489", "H5环境保存文件结果:", res);
             return res.savedFilePath;
           }
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:449", "保存图片时发生错误:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:493", "保存图片时发生错误:", error);
           throw error;
         }
       },
@@ -1931,7 +1932,7 @@ if (uni.restoreGlobal) {
                 }, (err) => reject(err));
               }, (err) => reject(err));
             }).catch((err) => {
-              formatAppLog("error", "at pages/inProject/inProject.vue:466", "创建目录失败:", err);
+              formatAppLog("error", "at pages/inProject/inProject.vue:510", "创建目录失败:", err);
               throw err;
             });
           }
@@ -1943,10 +1944,10 @@ if (uni.restoreGlobal) {
             });
           });
           const tempFilePath = res.tempFilePaths[0];
-          formatAppLog("log", "at pages/inProject/inProject.vue:480", "选择的临时文件路径:", tempFilePath);
+          formatAppLog("log", "at pages/inProject/inProject.vue:524", "选择的临时文件路径:", tempFilePath);
           try {
             const savedFilePath = await this.saveImageToLocal(tempFilePath);
-            formatAppLog("log", "at pages/inProject/inProject.vue:485", "保存后的文件路径:", savedFilePath);
+            formatAppLog("log", "at pages/inProject/inProject.vue:529", "保存后的文件路径:", savedFilePath);
             if (wall.id) {
               await sqliteUtil.updateTableData(
                 "wall_data",
@@ -1958,8 +1959,8 @@ if (uni.restoreGlobal) {
               const section = this.sections[this.currentIndex];
               await sqliteUtil.insertTableData(
                 "wall_data",
-                `null,${this.id},'${section}','${wall.name}','${wall.slope || ""}','${wall.flatness || ""}','${savedFilePath}'`,
-                "id,project_id,section,wall_name,slope,flatness,image"
+                `null,${this.id},'${section}','${wall.name}','${wall.slope_value || ""}','${wall.slope_angle || ""}','${wall.slope_type || ""}','${wall.flatness || ""}','${savedFilePath}'`,
+                "id,project_id,section,wall_name,slope_value,slope_angle,slope_type,flatness,image"
               );
               const result = await new Promise((resolve, reject) => {
                 plus.sqlite.selectSql({
@@ -1977,14 +1978,14 @@ if (uni.restoreGlobal) {
               icon: "success"
             });
           } catch (error) {
-            formatAppLog("error", "at pages/inProject/inProject.vue:524", "保存图片失败:", error);
+            formatAppLog("error", "at pages/inProject/inProject.vue:568", "保存图片失败:", error);
             uni.showToast({
               title: "保存图片失败",
               icon: "none"
             });
           }
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:531", "选择图片失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:575", "选择图片失败:", error);
           if (error.errMsg !== "chooseImage:fail cancel") {
             uni.showToast({
               title: "选择图片失败",
@@ -1997,23 +1998,25 @@ if (uni.restoreGlobal) {
       async reloadCurrentSectionData() {
         try {
           const currentSection = this.sections[this.currentIndex];
-          formatAppLog("log", "at pages/inProject/inProject.vue:545", "重新加载房间数据:", currentSection);
+          formatAppLog("log", "at pages/inProject/inProject.vue:589", "重新加载房间数据:", currentSection);
           const res = await sqliteUtil.selectTableData("wall_data", {
             project_id: this.id,
             section: currentSection
           });
-          formatAppLog("log", "at pages/inProject/inProject.vue:552", "重新加载的墙体数据:", res);
+          formatAppLog("log", "at pages/inProject/inProject.vue:596", "重新加载的墙体数据:", res);
           this.sectionData[currentSection] = res.map((item) => {
             let measurements = [];
             try {
               measurements = JSON.parse(item.measurements || "[]");
             } catch (e) {
-              formatAppLog("error", "at pages/inProject/inProject.vue:560", "解析测量数据失败:", e);
+              formatAppLog("error", "at pages/inProject/inProject.vue:604", "解析测量数据失败:", e);
               measurements = [];
             }
             return {
               name: item.wall_name,
-              slope: item.slope || "",
+              slope_value: item.slope_value || "",
+              slope_angle: item.slope_angle || "",
+              slope_type: item.slope_type || "",
               flatness: item.flatness || "",
               image: item.image || "",
               id: item.id,
@@ -2021,9 +2024,9 @@ if (uni.restoreGlobal) {
             };
           });
           this.$forceUpdate();
-          formatAppLog("log", "at pages/inProject/inProject.vue:576", "数据重新加载完成");
+          formatAppLog("log", "at pages/inProject/inProject.vue:622", "数据重新加载完成");
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:579", "重新加载数据失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:625", "重新加载数据失败:", error);
           uni.showToast({
             title: "刷新数据失败",
             icon: "none"
@@ -2050,7 +2053,7 @@ if (uni.restoreGlobal) {
                   icon: "success"
                 });
               } catch (error) {
-                formatAppLog("error", "at pages/inProject/inProject.vue:613", "删除数据失败:", error);
+                formatAppLog("error", "at pages/inProject/inProject.vue:659", "删除数据失败:", error);
                 uni.showToast({
                   title: "删除失败",
                   icon: "none"
@@ -2070,7 +2073,7 @@ if (uni.restoreGlobal) {
           await this.loadWallData();
           await this.loadSettings();
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:634", "页面加载失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:680", "页面加载失败:", error);
           uni.showToast({
             title: "加载失败",
             icon: "none"
@@ -2085,7 +2088,7 @@ if (uni.restoreGlobal) {
           await this.loadWallData();
           await this.loadSettings();
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:650", "页面刷新失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:696", "页面刷新失败:", error);
           uni.showToast({
             title: "刷新失败",
             icon: "none"
@@ -2093,11 +2096,11 @@ if (uni.restoreGlobal) {
         }
       },
       goToProjectEdit(id) {
-        formatAppLog("log", "at pages/inProject/inProject.vue:659", "跳转编辑页面，项目ID:", id);
+        formatAppLog("log", "at pages/inProject/inProject.vue:705", "跳转编辑页面，项目ID:", id);
         uni.navigateTo({
           url: `/pages/inProject/edit/edit?id=${this.id}`,
           fail: (err) => {
-            formatAppLog("error", "at pages/inProject/inProject.vue:663", "跳转失败:", err);
+            formatAppLog("error", "at pages/inProject/inProject.vue:709", "跳转失败:", err);
             uni.showToast({
               title: "跳转失败",
               icon: "none"
@@ -2130,8 +2133,8 @@ if (uni.restoreGlobal) {
           }
         }
         try {
-          const insertFields = ["id", "project_id", "section", "wall_name", "slope", "flatness", "image"];
-          const insertValues = [`null`, `'${this.id}'`, `'${key}'`, `'${wallName}'`, `''`, `''`, `''`];
+          const insertFields = ["id", "project_id", "section", "wall_name", "slope_value", "slope_angle", "slope_type", "flatness", "image"];
+          const insertValues = [`null`, `'${this.id}'`, `'${key}'`, `'${wallName}'`, `''`, `''`, `''`, `''`, `''`];
           await sqliteUtil.insertTableData(
             "wall_data",
             insertValues.join(","),
@@ -2151,7 +2154,9 @@ if (uni.restoreGlobal) {
           });
           existingWalls.push({
             name: wallName,
-            slope: "",
+            slope_value: "",
+            slope_angle: "",
+            slope_type: "",
             flatness: "",
             image: "",
             id: newWallResult[0].id
@@ -2163,7 +2168,7 @@ if (uni.restoreGlobal) {
             icon: "success"
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:742", "添加墙体失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:790", "添加墙体失败:", error);
           uni.showToast({
             title: "添加墙体失败",
             icon: "none"
@@ -2202,14 +2207,14 @@ if (uni.restoreGlobal) {
       previewImage(imageUrl) {
         if (!imageUrl)
           return;
-        formatAppLog("log", "at pages/inProject/inProject.vue:780", "预览图片路径:", imageUrl);
+        formatAppLog("log", "at pages/inProject/inProject.vue:828", "预览图片路径:", imageUrl);
         const fullPath = imageUrl.startsWith("_doc/") ? imageUrl : `_doc/${imageUrl}`;
-        formatAppLog("log", "at pages/inProject/inProject.vue:784", "完整预览路径:", fullPath);
+        formatAppLog("log", "at pages/inProject/inProject.vue:832", "完整预览路径:", fullPath);
         uni.previewImage({
           urls: [fullPath],
           current: fullPath,
           fail: (err) => {
-            formatAppLog("error", "at pages/inProject/inProject.vue:790", "预览图片失败:", err);
+            formatAppLog("error", "at pages/inProject/inProject.vue:838", "预览图片失败:", err);
             uni.showToast({
               title: "预览失败",
               icon: "none"
@@ -2227,14 +2232,14 @@ if (uni.restoreGlobal) {
                 await new Promise((resolve, reject) => {
                   plus.io.resolveLocalFileSystemURL(oldImagePath, (entry) => {
                     entry.remove(() => {
-                      formatAppLog("log", "at pages/inProject/inProject.vue:810", "文件删除成功");
+                      formatAppLog("log", "at pages/inProject/inProject.vue:858", "文件删除成功");
                       resolve();
                     }, (e) => {
-                      formatAppLog("warn", "at pages/inProject/inProject.vue:813", "文件删除失败:", e);
+                      formatAppLog("warn", "at pages/inProject/inProject.vue:861", "文件删除失败:", e);
                       reject(e);
                     });
                   }, (e) => {
-                    formatAppLog("warn", "at pages/inProject/inProject.vue:817", "解析文件路径失败:", e);
+                    formatAppLog("warn", "at pages/inProject/inProject.vue:865", "解析文件路径失败:", e);
                     reject(e);
                   });
                 });
@@ -2244,7 +2249,7 @@ if (uni.restoreGlobal) {
                 });
               }
             } catch (e) {
-              formatAppLog("warn", "at pages/inProject/inProject.vue:828", "删除旧图片文件失败:", e);
+              formatAppLog("warn", "at pages/inProject/inProject.vue:876", "删除旧图片文件失败:", e);
             }
           }
           if (wall.id) {
@@ -2261,7 +2266,7 @@ if (uni.restoreGlobal) {
             });
           }
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:850", "删除图片失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:898", "删除图片失败:", error);
           uni.showToast({
             title: "删除失败",
             icon: "none"
@@ -2288,7 +2293,9 @@ if (uni.restoreGlobal) {
                 name: wall.name
               };
               if (this.showSlope) {
-                filteredWall.slope = wall.slope;
+                filteredWall.slope_value = wall.slope_value;
+                filteredWall.slope_angle = wall.slope_angle;
+                filteredWall.slope_type = wall.slope_type;
               }
               if (this.showFlatness) {
                 filteredWall.flatness = wall.flatness;
@@ -2297,11 +2304,11 @@ if (uni.restoreGlobal) {
             }).filter((wall) => {
               const projectType = this.project.project_status;
               if (projectType === "坡度") {
-                return wall.slope;
+                return wall.slope_value;
               } else if (projectType === "平整度") {
                 return wall.flatness;
               } else if (projectType === "坡度加平整度") {
-                return this.showSlope && wall.slope || this.showFlatness && wall.flatness;
+                return this.showSlope && wall.slope_value || this.showFlatness && wall.flatness;
               }
               return false;
             });
@@ -2331,7 +2338,7 @@ if (uni.restoreGlobal) {
           uni.navigateTo({
             url: `/pages/newProject/csv/preview/preview?data=${encodedData}`,
             fail: (err) => {
-              formatAppLog("error", "at pages/inProject/inProject.vue:930", "跳转预览页面失败:", err);
+              formatAppLog("error", "at pages/inProject/inProject.vue:980", "跳转预览页面失败:", err);
               uni.showToast({
                 title: "跳转失败",
                 icon: "none"
@@ -2339,7 +2346,7 @@ if (uni.restoreGlobal) {
             }
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:938", "导出失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:988", "导出失败:", error);
           uni.showToast({
             title: "导出失败",
             icon: "none"
@@ -2359,7 +2366,7 @@ if (uni.restoreGlobal) {
             uni.showToast({ title: "未找到该项目", icon: "none" });
           }
         } catch (e) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:959", "查询失败", e);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1009", "查询失败", e);
           uni.showToast({ title: "查询出错", icon: "none" });
         }
       },
@@ -2429,9 +2436,9 @@ if (uni.restoreGlobal) {
           "flatness_warning" REAL,
           FOREIGN KEY(project_id) REFERENCES project(id)
         `);
-          formatAppLog("log", "at pages/inProject/inProject.vue:1027", "预警设置表创建成功");
+          formatAppLog("log", "at pages/inProject/inProject.vue:1077", "预警设置表创建成功");
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1029", "创建预警设置表失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1079", "创建预警设置表失败:", error);
         }
       },
       async loadSettings() {
@@ -2451,7 +2458,7 @@ if (uni.restoreGlobal) {
             }
           }
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1051", "加载预警设置失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1101", "加载预警设置失败:", error);
           this.warningSettings = {
             slopeWarning: "",
             flatnessWarning: ""
@@ -2494,7 +2501,7 @@ if (uni.restoreGlobal) {
           });
           await this.loadSettings();
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1105", "保存设置失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1155", "保存设置失败:", error);
           uni.showToast({
             title: "保存失败",
             icon: "none"
@@ -2503,6 +2510,19 @@ if (uni.restoreGlobal) {
       },
       handleSettingInput(field, value) {
         this.warningSettings[field] = value;
+      },
+      // 跳转到预设管理页面
+      goToPresets() {
+        uni.navigateTo({
+          url: "/pages/warning-presets/warning-presets",
+          fail: (err) => {
+            formatAppLog("error", "at pages/inProject/inProject.vue:1172", "跳转失败:", err);
+            uni.showToast({
+              title: "跳转失败",
+              icon: "none"
+            });
+          }
+        });
       },
       isOverWarning(value, type) {
         if (!value || !this.warningSettings[type + "Warning"])
@@ -2521,10 +2541,10 @@ if (uni.restoreGlobal) {
           "sort_order" INTEGER,
           FOREIGN KEY(project_id) REFERENCES project(id)
         `);
-          formatAppLog("log", "at pages/inProject/inProject.vue:1134", "房间表创建成功");
+          formatAppLog("log", "at pages/inProject/inProject.vue:1198", "房间表创建成功");
           await this.loadSections();
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1137", "创建房间表失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1201", "创建房间表失败:", error);
         }
       },
       // 加载房间数据
@@ -2542,7 +2562,7 @@ if (uni.restoreGlobal) {
             }
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1159", "加载房间数据失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1223", "加载房间数据失败:", error);
         }
       },
       // 添加新房间
@@ -2605,7 +2625,7 @@ if (uni.restoreGlobal) {
             icon: "success"
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1235", "操作房间失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1299", "操作房间失败:", error);
           uni.showToast({
             title: "操作失败",
             icon: "none"
@@ -2637,7 +2657,7 @@ if (uni.restoreGlobal) {
                   icon: "success"
                 });
               } catch (error) {
-                formatAppLog("error", "at pages/inProject/inProject.vue:1276", "删除房间失败:", error);
+                formatAppLog("error", "at pages/inProject/inProject.vue:1340", "删除房间失败:", error);
                 uni.showToast({
                   title: "删除失败",
                   icon: "none"
@@ -2684,7 +2704,7 @@ if (uni.restoreGlobal) {
             icon: "success"
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1340", "开始测量失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1404", "开始测量失败:", error);
           this.stopMeasure();
           uni.showToast({
             title: "测量初始化失败",
@@ -2700,7 +2720,7 @@ if (uni.restoreGlobal) {
               resolve();
             },
             fail: (error) => {
-              formatAppLog("error", "at pages/inProject/inProject.vue:1357", "蓝牙初始化失败:", error);
+              formatAppLog("error", "at pages/inProject/inProject.vue:1421", "蓝牙初始化失败:", error);
               reject(new Error("蓝牙初始化失败"));
             }
           });
@@ -2722,106 +2742,108 @@ if (uni.restoreGlobal) {
           }
           await new Promise((resolve, reject) => {
             uni.onBLECharacteristicValueChange((result) => {
-              const hex = Array.from(new Uint8Array(result.value)).map((b) => b.toString(16).padStart(2, "0")).join(" ");
-              formatAppLog("log", "at pages/inProject/inProject.vue:1386", "收到蓝牙数据：", {
-                hex,
-                buffer: result.value,
-                timestamp: (/* @__PURE__ */ new Date()).toLocaleTimeString(),
-                characteristicId: result.characteristicId,
-                serviceId: result.serviceId
-              });
-              const value = this.parseBluetoothData(new Uint8Array(result.value));
-              if (value !== null && this.currentMeasureWall && this.isMeasuring) {
-                const isPzd = result.characteristicId.toLowerCase() === bleState.pzdCharacteristicId.toLowerCase() && result.serviceId.toLowerCase() === bleState.serviceId.toLowerCase();
-                const isPd = result.characteristicId.toLowerCase() === bleState.pdCharacteristicId.toLowerCase() && result.serviceId.toLowerCase() === bleState.serviceId2.toLowerCase();
+              const parsedData = this.parseBluetoothData(new Uint8Array(result.value));
+              if (parsedData && this.currentMeasureWall && this.isMeasuring) {
                 if (!this.currentMeasureWall.measurements) {
                   this.currentMeasureWall.measurements = [];
                 }
-                if (this.projectType === "坡度加平整度") {
-                  if (!this.tempMeasurement) {
-                    this.tempMeasurement = {
-                      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-                      slope: null,
-                      flatness: null
+                if (!this.tempMeasureGroup) {
+                  this.tempMeasureGroup = {
+                    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+                    values: [],
+                    flatness: null
+                  };
+                }
+                if (parsedData.type === "slope") {
+                  const existingIndex = this.tempMeasureGroup.values.findIndex((v) => v.type === parsedData.data.type);
+                  if (existingIndex >= 0) {
+                    this.tempMeasureGroup.values[existingIndex] = {
+                      ...parsedData.data,
+                      showAngle: false
                     };
-                  }
-                  if (isPzd && this.showFlatness) {
-                    formatAppLog("log", "at pages/inProject/inProject.vue:1419", "收到平整度数据:", value);
-                    this.tempMeasurement.flatness = value;
-                    uni.showToast({
-                      title: "已接收平整度",
-                      icon: "none",
-                      duration: 1e3
-                    });
-                  } else if (isPd && this.showSlope) {
-                    formatAppLog("log", "at pages/inProject/inProject.vue:1428", "收到坡度数据:", value);
-                    this.tempMeasurement.slope = value;
-                    uni.showToast({
-                      title: "已接收坡度",
-                      icon: "none",
-                      duration: 1e3
-                    });
-                  }
-                  const hasValidData = (!this.showSlope || this.tempMeasurement.slope !== null) && (!this.showFlatness || this.tempMeasurement.flatness !== null);
-                  if (hasValidData) {
-                    this.currentMeasureWall.measurements.push({ ...this.tempMeasurement });
-                    this.handleDataChange();
-                    this.tempMeasurement = null;
-                    uni.showToast({
-                      title: "测量完成",
-                      icon: "success",
-                      duration: 1500
-                    });
                   } else {
-                    let waitingFor = [];
-                    if (this.showSlope && this.tempMeasurement.slope === null)
-                      waitingFor.push("坡度");
-                    if (this.showFlatness && this.tempMeasurement.flatness === null)
-                      waitingFor.push("平整度");
-                    if (waitingFor.length > 0) {
-                      formatAppLog("log", "at pages/inProject/inProject.vue:1463", `等待接收: ${waitingFor.join("和")}`);
-                    }
-                  }
-                } else {
-                  if (this.projectType === "坡度" && isPd || this.projectType === "平整度" && isPzd) {
-                    let newMeasurement = {
-                      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-                      slope: this.projectType === "坡度" ? value : null,
-                      flatness: this.projectType === "平整度" ? value : null
-                    };
-                    this.currentMeasureWall.measurements.push(newMeasurement);
-                    this.handleDataChange();
-                    uni.showToast({
-                      title: "测量完成",
-                      icon: "success",
-                      duration: 1500
+                    this.tempMeasureGroup.values.push({
+                      ...parsedData.data,
+                      showAngle: false
                     });
                   }
+                  uni.showToast({
+                    title: `已接收${parsedData.data.type === 1 ? "垂直度" : "水平度"}`,
+                    icon: "none",
+                    duration: 1e3
+                  });
+                } else if (parsedData.type === "flatness") {
+                  this.tempMeasureGroup.flatness = parsedData.data;
+                  uni.showToast({
+                    title: "已接收平整度",
+                    icon: "none",
+                    duration: 1e3
+                  });
+                }
+                const shouldSave = this.checkShouldSaveGroup();
+                if (shouldSave) {
+                  this.currentMeasureWall.measurements.push({ ...this.tempMeasureGroup });
+                  this.handleDataChange();
+                  this.tempMeasureGroup = null;
+                  uni.showToast({
+                    title: "测量完成",
+                    icon: "success",
+                    duration: 1500
+                  });
                 }
               }
             });
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1494", "启动蓝牙监听失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1520", "启动蓝牙监听失败:", error);
           throw error;
         }
       },
       // 解析蓝牙数据
       parseBluetoothData(value) {
         try {
-          formatAppLog("log", "at pages/inProject/inProject.vue:1503", "原始数据字节数组:", Array.from(value).map((b) => b.toString(16).padStart(2, "0")));
           let result = "";
           for (let i = 0; i < value.length; i++) {
             result += String.fromCharCode(value[i]);
           }
-          formatAppLog("log", "at pages/inProject/inProject.vue:1510", "转换后的字符串:", result);
-          const number = parseFloat(result);
-          formatAppLog("log", "at pages/inProject/inProject.vue:1514", "解析后的数字:", number);
-          const finalResult = isNaN(number) ? null : number.toFixed(2);
-          formatAppLog("log", "at pages/inProject/inProject.vue:1517", "最终结果:", finalResult);
-          return finalResult;
+          formatAppLog("log", "at pages/inProject/inProject.vue:1532", "收到的原始字符串:", result);
+          const parts = result.split(",").map((part) => part.trim());
+          const type = parseInt(parts[0]);
+          if (isNaN(type))
+            return null;
+          switch (type) {
+            case 1:
+            case 3:
+              if (parts.length >= 4) {
+                const deviation = parseFloat(parts[1]);
+                const angle = parseFloat(parts[3]);
+                if (!isNaN(deviation) && !isNaN(angle)) {
+                  return {
+                    type: "slope",
+                    data: {
+                      type,
+                      value: deviation.toFixed(2),
+                      angle: angle.toFixed(2)
+                    }
+                  };
+                }
+              }
+              break;
+            case 5:
+              if (parts.length >= 2) {
+                const flatness = parseFloat(parts[1]);
+                if (!isNaN(flatness)) {
+                  return {
+                    type: "flatness",
+                    data: flatness.toFixed(2)
+                  };
+                }
+              }
+              break;
+          }
+          return null;
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1521", "解析数据失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1572", "解析数据失败:", error);
           return null;
         }
       },
@@ -2862,7 +2884,7 @@ if (uni.restoreGlobal) {
               });
             });
           } catch (error) {
-            formatAppLog("error", "at pages/inProject/inProject.vue:1578", "蓝牙连接状态验证失败:", error);
+            formatAppLog("error", "at pages/inProject/inProject.vue:1629", "蓝牙连接状态验证失败:", error);
             bleManager.clear();
           }
         }
@@ -2914,27 +2936,51 @@ if (uni.restoreGlobal) {
             icon: "success"
           });
         } catch (error) {
-          formatAppLog("error", "at pages/inProject/inProject.vue:1644", "修改墙体名称失败:", error);
+          formatAppLog("error", "at pages/inProject/inProject.vue:1695", "修改墙体名称失败:", error);
           uni.showToast({
             title: "修改失败",
             icon: "none"
           });
         }
+      },
+      // 处理坡度输入
+      handleSlopeInput(wall, item, value, measurementIndex, valueIndex) {
+        if (item.showAngle) {
+          wall.measurements[measurementIndex].values[valueIndex].angle = value;
+        } else {
+          wall.measurements[measurementIndex].values[valueIndex].value = value;
+        }
+        this.handleDataChange();
+      },
+      // 添加检查是否应该保存测量组的方法
+      checkShouldSaveGroup() {
+        if (!this.tempMeasureGroup)
+          return false;
+        switch (this.projectType) {
+          case "坡度":
+            return this.tempMeasureGroup.values.length > 0;
+          case "平整度":
+            return this.tempMeasureGroup.flatness !== null;
+          case "坡度加平整度":
+            return this.tempMeasureGroup.values.length > 0 && this.tempMeasureGroup.flatness !== null;
+          default:
+            return false;
+        }
       }
     },
     onLoad(options) {
-      formatAppLog("log", "at pages/inProject/inProject.vue:1653", "onLoad options:", options);
+      formatAppLog("log", "at pages/inProject/inProject.vue:1738", "onLoad options:", options);
       this.initPageData(options);
     },
     onShow() {
-      formatAppLog("log", "at pages/inProject/inProject.vue:1657", "onShow with id:", this.id);
+      formatAppLog("log", "at pages/inProject/inProject.vue:1742", "onShow with id:", this.id);
       if (this.id) {
         this.refreshPageData();
       }
       this.checkBleConnection();
     }
   };
-  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createCommentVNode(" 固定顶部标题，支持点击跳转 "),
       vue.createElementVNode("view", {
@@ -3054,8 +3100,8 @@ if (uni.restoreGlobal) {
                           vue.createElementVNode("view", { class: "measurement-header" }, [
                             vue.createElementVNode(
                               "text",
-                              { class: "measurement-time" },
-                              vue.toDisplayString($data.formatTime(measurement.timestamp)),
+                              { class: "measurement-index" },
+                              "第" + vue.toDisplayString(index + 1) + "组测量值",
                               1
                               /* TEXT */
                             ),
@@ -3065,32 +3111,65 @@ if (uni.restoreGlobal) {
                             }, "×", 8, ["onClick"])
                           ]),
                           vue.createElementVNode("view", { class: "measurement-data" }, [
-                            $options.showSlope && measurement.slope !== null ? (vue.openBlock(), vue.createElementBlock("view", {
+                            $options.showSlope && measurement.values && measurement.values.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
                               key: 0,
-                              class: "row"
+                              class: "slope-values"
                             }, [
-                              vue.createElementVNode("text", { class: "label" }, "坡度↔"),
-                              vue.createElementVNode("view", { class: "input-unit-wrapper" }, [
-                                vue.createElementVNode("input", {
-                                  class: vue.normalizeClass(["input", $options.isOverWarning(measurement.slope, "slope") ? "warning" : ""]),
-                                  value: measurement.slope,
-                                  onInput: (e) => $options.handleInput(wall, "slope", e.detail.value, index),
-                                  placeholder: "请输入坡度"
-                                }, null, 42, ["value", "onInput"]),
-                                vue.createElementVNode("text", { class: "unit" }, "mm/M")
-                              ])
+                              (vue.openBlock(true), vue.createElementBlock(
+                                vue.Fragment,
+                                null,
+                                vue.renderList(measurement.values, (item, vIndex) => {
+                                  return vue.openBlock(), vue.createElementBlock("view", {
+                                    key: vIndex,
+                                    class: "row"
+                                  }, [
+                                    vue.createElementVNode("view", { class: "label-container" }, [
+                                      vue.createElementVNode(
+                                        "text",
+                                        { class: "label" },
+                                        vue.toDisplayString($options.getSlopeTypeText(item.type)),
+                                        1
+                                        /* TEXT */
+                                      ),
+                                      vue.createElementVNode("text", {
+                                        class: "toggle-unit",
+                                        onClick: ($event) => item.showAngle = !item.showAngle
+                                      }, "<->", 8, ["onClick"])
+                                    ]),
+                                    vue.createElementVNode("view", { class: "input-unit-wrapper" }, [
+                                      vue.createElementVNode("input", {
+                                        class: vue.normalizeClass(["input", $options.isOverWarning(item.showAngle ? item.angle : item.value, "slope") ? "warning" : ""]),
+                                        value: item.showAngle ? item.angle : item.value,
+                                        onInput: (e) => $options.handleSlopeInput(wall, item, e.detail.value, index, vIndex),
+                                        disabled: ""
+                                      }, null, 42, ["value", "onInput"]),
+                                      vue.createElementVNode(
+                                        "text",
+                                        { class: "unit" },
+                                        vue.toDisplayString(item.showAngle ? "°" : "mm/M"),
+                                        1
+                                        /* TEXT */
+                                      )
+                                    ])
+                                  ]);
+                                }),
+                                128
+                                /* KEYED_FRAGMENT */
+                              ))
                             ])) : vue.createCommentVNode("v-if", true),
                             $options.showFlatness && measurement.flatness !== null ? (vue.openBlock(), vue.createElementBlock("view", {
                               key: 1,
                               class: "row"
                             }, [
-                              vue.createElementVNode("text", { class: "label" }, "平整度"),
+                              vue.createElementVNode("view", { class: "label-container" }, [
+                                vue.createElementVNode("text", { class: "label" }, "平整度")
+                              ]),
                               vue.createElementVNode("view", { class: "input-unit-wrapper" }, [
                                 vue.createElementVNode("input", {
                                   class: vue.normalizeClass(["input", $options.isOverWarning(measurement.flatness, "flatness") ? "warning" : ""]),
                                   value: measurement.flatness,
                                   onInput: (e) => $options.handleInput(wall, "flatness", e.detail.value, index),
-                                  placeholder: "请输入平整度"
+                                  disabled: ""
                                 }, null, 42, ["value", "onInput"]),
                                 vue.createElementVNode("text", { class: "unit" }, "mm")
                               ])
@@ -3232,16 +3311,20 @@ if (uni.restoreGlobal) {
                 onInput: _cache[11] || (_cache[11] = (e) => $options.handleSettingInput("flatnessWarning", e.detail.value)),
                 placeholder: "请输入平整度预警值"
               }, null, 40, ["value"])
-            ])) : vue.createCommentVNode("v-if", true)
+            ])) : vue.createCommentVNode("v-if", true),
+            vue.createElementVNode("button", {
+              class: "preset-manage-btn",
+              onClick: _cache[12] || (_cache[12] = (...args) => $options.goToPresets && $options.goToPresets(...args))
+            }, "使用预设值")
           ]),
           vue.createElementVNode("view", { class: "popup-buttons" }, [
             vue.createElementVNode("button", {
               class: "popup-btn cancel",
-              onClick: _cache[12] || (_cache[12] = ($event) => $data.showSettings = false)
+              onClick: _cache[13] || (_cache[13] = ($event) => $data.showSettings = false)
             }, "取消"),
             vue.createElementVNode("button", {
               class: "popup-btn confirm",
-              onClick: _cache[13] || (_cache[13] = (...args) => $options.saveSettings && $options.saveSettings(...args))
+              onClick: _cache[14] || (_cache[14] = (...args) => $options.saveSettings && $options.saveSettings(...args))
             }, "确定")
           ])
         ])
@@ -3253,7 +3336,7 @@ if (uni.restoreGlobal) {
       }, [
         vue.createElementVNode("view", {
           class: "popup-mask",
-          onClick: _cache[14] || (_cache[14] = ($event) => $data.showSectionInput = false)
+          onClick: _cache[15] || (_cache[15] = ($event) => $data.showSectionInput = false)
         }),
         vue.createElementVNode("view", { class: "popup-content" }, [
           vue.createElementVNode(
@@ -3266,7 +3349,7 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("view", { class: "popup-input-wrap" }, [
             vue.withDirectives(vue.createElementVNode("input", {
               class: "popup-input",
-              "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => $data.newSectionName = $event),
+              "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => $data.newSectionName = $event),
               placeholder: $data.isEditingSection ? "请输入新的房间名称" : "请输入房间名称",
               "placeholder-class": "input-placeholder"
             }, null, 8, ["placeholder"]), [
@@ -3276,11 +3359,11 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("view", { class: "popup-buttons" }, [
             vue.createElementVNode("button", {
               class: "popup-btn cancel",
-              onClick: _cache[16] || (_cache[16] = ($event) => $data.showSectionInput = false)
+              onClick: _cache[17] || (_cache[17] = ($event) => $data.showSectionInput = false)
             }, "取消"),
             vue.createElementVNode("button", {
               class: "popup-btn confirm",
-              onClick: _cache[17] || (_cache[17] = (...args) => $options.confirmSection && $options.confirmSection(...args))
+              onClick: _cache[18] || (_cache[18] = (...args) => $options.confirmSection && $options.confirmSection(...args))
             }, "确定")
           ])
         ])
@@ -3292,7 +3375,7 @@ if (uni.restoreGlobal) {
       }, [
         vue.createElementVNode("view", {
           class: "popup-mask",
-          onClick: _cache[18] || (_cache[18] = ($event) => $data.showWallNameInput = false)
+          onClick: _cache[19] || (_cache[19] = ($event) => $data.showWallNameInput = false)
         }),
         vue.createElementVNode("view", { class: "popup-content" }, [
           vue.createElementVNode("view", { class: "popup-title" }, "修改墙体名称"),
@@ -3301,7 +3384,7 @@ if (uni.restoreGlobal) {
               "input",
               {
                 class: "popup-input",
-                "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => $data.editingWallName = $event),
+                "onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => $data.editingWallName = $event),
                 placeholder: "请输入新的墙体名称",
                 "placeholder-class": "input-placeholder"
               },
@@ -3315,19 +3398,19 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("view", { class: "popup-buttons" }, [
             vue.createElementVNode("button", {
               class: "popup-btn cancel",
-              onClick: _cache[20] || (_cache[20] = ($event) => $data.showWallNameInput = false)
+              onClick: _cache[21] || (_cache[21] = ($event) => $data.showWallNameInput = false)
             }, "取消"),
             vue.createElementVNode("button", {
               class: "popup-btn confirm",
-              onClick: _cache[21] || (_cache[21] = (...args) => $options.confirmEditWallName && $options.confirmEditWallName(...args))
+              onClick: _cache[22] || (_cache[22] = (...args) => $options.confirmEditWallName && $options.confirmEditWallName(...args))
             }, "确定")
           ])
         ])
       ])) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const PagesInProjectInProject = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__scopeId", "data-v-92d98530"], ["__file", "D:/nhuProject/智能靠尺/pages/inProject/inProject.vue"]]);
-  const _sfc_main$6 = {
+  const PagesInProjectInProject = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__scopeId", "data-v-92d98530"], ["__file", "D:/nhuProject/智能靠尺/pages/inProject/inProject.vue"]]);
+  const _sfc_main$7 = {
     data() {
       return {
         listData: []
@@ -3557,7 +3640,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "uni-divider uni-divider__content" }, "Demo"),
       vue.createElementVNode("button", {
@@ -3617,8 +3700,8 @@ if (uni.restoreGlobal) {
       ))
     ]);
   }
-  const PagesTestTest = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/nhuProject/智能靠尺/pages/test/test.vue"]]);
-  const _sfc_main$5 = {
+  const PagesTestTest = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__file", "D:/nhuProject/智能靠尺/pages/test/test.vue"]]);
+  const _sfc_main$6 = {
     data() {
       return {
         typeOptions: [
@@ -3754,7 +3837,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "main" }, [
       vue.createElementVNode("scroll-view", {
         "scroll-y": "true",
@@ -3922,8 +4005,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesNewProjectTemplateTemplate = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/template/template.vue"]]);
-  const _sfc_main$4 = {
+  const PagesNewProjectTemplateTemplate = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/template/template.vue"]]);
+  const _sfc_main$5 = {
     data() {
       return {
         selectedFile: null,
@@ -4679,7 +4762,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("scroll-view", {
         class: "scroll-container",
@@ -5072,8 +5155,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesNewProjectCsvCsv = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__scopeId", "data-v-a946101b"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/csv/csv.vue"]]);
-  const _sfc_main$3 = {
+  const PagesNewProjectCsvCsv = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__scopeId", "data-v-a946101b"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/csv/csv.vue"]]);
+  const _sfc_main$4 = {
     data() {
       return {
         inputText: "",
@@ -5412,7 +5495,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("scroll-view", {
         class: "scroll-container",
@@ -5665,8 +5748,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesNewProjectTextText = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-70560217"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/text/text.vue"]]);
-  const _sfc_main$2 = {
+  const PagesNewProjectTextText = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__scopeId", "data-v-70560217"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/text/text.vue"]]);
+  const _sfc_main$3 = {
     data() {
       return {
         projectId: null,
@@ -5834,7 +5917,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "main" }, [
       vue.createElementVNode("scroll-view", {
         "scroll-y": "true",
@@ -6002,8 +6085,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesInProjectEditEdit = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__file", "D:/nhuProject/智能靠尺/pages/inProject/edit/edit.vue"]]);
-  const _sfc_main$1 = {
+  const PagesInProjectEditEdit = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__file", "D:/nhuProject/智能靠尺/pages/inProject/edit/edit.vue"]]);
+  const _sfc_main$2 = {
     data() {
       return {
         fileName: "",
@@ -6474,7 +6557,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createCommentVNode(" 顶部标题和说明 "),
       vue.createCommentVNode(" 文件信息 "),
@@ -6668,7 +6751,303 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesNewProjectCsvPreviewPreview = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-4c95b366"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/csv/preview/preview.vue"]]);
+  const PagesNewProjectCsvPreviewPreview = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-4c95b366"], ["__file", "D:/nhuProject/智能靠尺/pages/newProject/csv/preview/preview.vue"]]);
+  const _sfc_main$1 = {
+    data() {
+      return {
+        presets: [],
+        showModal: false,
+        isEditing: false,
+        currentPreset: {
+          id: null,
+          name: "",
+          slopeWarning: "",
+          flatnessWarning: ""
+        }
+      };
+    },
+    methods: {
+      // 加载预设列表
+      async loadPresets() {
+        try {
+          const res = await sqliteUtil.selectTableData("warning_presets");
+          this.presets = res.map((item) => ({
+            id: item.id,
+            name: item.name,
+            slopeWarning: item.slope_warning,
+            flatnessWarning: item.flatness_warning
+          }));
+        } catch (error) {
+          formatAppLog("error", "at pages/warning-presets/warning-presets.vue:89", "加载预设失败:", error);
+          uni.showToast({
+            title: "加载预设失败",
+            icon: "none"
+          });
+        }
+      },
+      // 显示添加预设弹窗
+      showAddPresetModal() {
+        this.isEditing = false;
+        this.currentPreset = {
+          id: null,
+          name: "",
+          slopeWarning: "",
+          flatnessWarning: ""
+        };
+        this.showModal = true;
+      },
+      // 编辑预设
+      editPreset(preset) {
+        this.isEditing = true;
+        this.currentPreset = { ...preset };
+        this.showModal = true;
+      },
+      // 关闭弹窗
+      closeModal() {
+        this.showModal = false;
+      },
+      // 保存预设
+      async savePreset() {
+        try {
+          if (!this.currentPreset.name.trim()) {
+            uni.showToast({
+              title: "请输入预设名称",
+              icon: "none"
+            });
+            return;
+          }
+          const data = {
+            name: this.currentPreset.name.trim(),
+            slope_warning: this.currentPreset.slopeWarning ? parseFloat(this.currentPreset.slopeWarning) : null,
+            flatness_warning: this.currentPreset.flatnessWarning ? parseFloat(this.currentPreset.flatnessWarning) : null
+          };
+          if (this.isEditing) {
+            await sqliteUtil.updateTableData(
+              "warning_presets",
+              `name='${data.name}',slope_warning=${data.slope_warning},flatness_warning=${data.flatness_warning}`,
+              "id",
+              this.currentPreset.id
+            );
+          } else {
+            await sqliteUtil.insertTableData(
+              "warning_presets",
+              `null,'${data.name}',${data.slope_warning},${data.flatness_warning}`,
+              "id,name,slope_warning,flatness_warning"
+            );
+          }
+          this.showModal = false;
+          await this.loadPresets();
+          uni.showToast({
+            title: this.isEditing ? "更新成功" : "添加成功",
+            icon: "success"
+          });
+        } catch (error) {
+          formatAppLog("error", "at pages/warning-presets/warning-presets.vue:163", "保存预设失败:", error);
+          uni.showToast({
+            title: "保存失败",
+            icon: "none"
+          });
+        }
+      },
+      // 删除预设
+      async deletePreset(preset) {
+        uni.showModal({
+          title: "确认删除",
+          content: "是否确认删除该预设？",
+          success: async (res) => {
+            if (res.confirm) {
+              try {
+                await sqliteUtil.deleteTableData("warning_presets", { id: preset.id });
+                await this.loadPresets();
+                uni.showToast({
+                  title: "删除成功",
+                  icon: "success"
+                });
+              } catch (error) {
+                formatAppLog("error", "at pages/warning-presets/warning-presets.vue:186", "删除预设失败:", error);
+                uni.showToast({
+                  title: "删除失败",
+                  icon: "none"
+                });
+              }
+            }
+          }
+        });
+      },
+      // 使用预设
+      usePreset(preset) {
+        var _a, _b;
+        const pages = getCurrentPages();
+        const prevPage = pages[pages.length - 2];
+        if (prevPage) {
+          prevPage.$vm.warningSettings = {
+            slopeWarning: ((_a = preset.slopeWarning) == null ? void 0 : _a.toString()) || "",
+            flatnessWarning: ((_b = preset.flatnessWarning) == null ? void 0 : _b.toString()) || ""
+          };
+          prevPage.$vm.saveSettings();
+        }
+        uni.navigateBack();
+      }
+    },
+    onLoad() {
+      this.loadPresets();
+    }
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
+      vue.createElementVNode("view", { class: "header" }, [
+        vue.createElementVNode("text", { class: "title" }, "预警值预设管理")
+      ]),
+      vue.createElementVNode("view", { class: "preset-list" }, [
+        (vue.openBlock(true), vue.createElementBlock(
+          vue.Fragment,
+          null,
+          vue.renderList($data.presets, (preset, index) => {
+            return vue.openBlock(), vue.createElementBlock("view", {
+              class: "preset-item",
+              key: index
+            }, [
+              vue.createElementVNode("view", { class: "preset-content" }, [
+                vue.createElementVNode(
+                  "text",
+                  { class: "preset-name" },
+                  vue.toDisplayString(preset.name),
+                  1
+                  /* TEXT */
+                ),
+                vue.createElementVNode("view", { class: "preset-values" }, [
+                  preset.slopeWarning !== null ? (vue.openBlock(), vue.createElementBlock(
+                    "text",
+                    {
+                      key: 0,
+                      class: "value-item"
+                    },
+                    " 坡度预警值: " + vue.toDisplayString(preset.slopeWarning) + "mm/M ",
+                    1
+                    /* TEXT */
+                  )) : vue.createCommentVNode("v-if", true),
+                  preset.flatnessWarning !== null ? (vue.openBlock(), vue.createElementBlock(
+                    "text",
+                    {
+                      key: 1,
+                      class: "value-item"
+                    },
+                    " 平整度预警值: " + vue.toDisplayString(preset.flatnessWarning) + "mm ",
+                    1
+                    /* TEXT */
+                  )) : vue.createCommentVNode("v-if", true)
+                ])
+              ]),
+              vue.createElementVNode("view", { class: "preset-actions" }, [
+                vue.createElementVNode("button", {
+                  class: "action-btn use",
+                  onClick: ($event) => $options.usePreset(preset)
+                }, "使用", 8, ["onClick"]),
+                vue.createElementVNode("button", {
+                  class: "action-btn edit",
+                  onClick: ($event) => $options.editPreset(preset)
+                }, "编辑", 8, ["onClick"]),
+                vue.createElementVNode("button", {
+                  class: "action-btn delete",
+                  onClick: ($event) => $options.deletePreset(preset)
+                }, "删除", 8, ["onClick"])
+              ])
+            ]);
+          }),
+          128
+          /* KEYED_FRAGMENT */
+        ))
+      ]),
+      vue.createElementVNode("button", {
+        class: "add-btn",
+        onClick: _cache[0] || (_cache[0] = (...args) => $options.showAddPresetModal && $options.showAddPresetModal(...args))
+      }, "+ 添加预设"),
+      vue.createCommentVNode(" 添加/编辑预设弹窗 "),
+      $data.showModal ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        class: "modal"
+      }, [
+        vue.createElementVNode("view", {
+          class: "modal-mask",
+          onClick: _cache[1] || (_cache[1] = (...args) => $options.closeModal && $options.closeModal(...args))
+        }),
+        vue.createElementVNode("view", { class: "modal-content" }, [
+          vue.createElementVNode("view", { class: "modal-header" }, [
+            vue.createElementVNode(
+              "text",
+              { class: "modal-title" },
+              vue.toDisplayString($data.isEditing ? "编辑预设" : "添加预设"),
+              1
+              /* TEXT */
+            )
+          ]),
+          vue.createElementVNode("view", { class: "modal-body" }, [
+            vue.createElementVNode("view", { class: "input-group" }, [
+              vue.createElementVNode("text", { class: "label" }, "预设名称"),
+              vue.withDirectives(vue.createElementVNode(
+                "input",
+                {
+                  class: "input",
+                  "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.currentPreset.name = $event),
+                  placeholder: "请输入预设名称"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vue.vModelText, $data.currentPreset.name]
+              ])
+            ]),
+            vue.createElementVNode("view", { class: "input-group" }, [
+              vue.createElementVNode("text", { class: "label" }, "坡度预警值 (mm/M)"),
+              vue.withDirectives(vue.createElementVNode(
+                "input",
+                {
+                  class: "input",
+                  type: "digit",
+                  "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $data.currentPreset.slopeWarning = $event),
+                  placeholder: "请输入坡度预警值"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vue.vModelText, $data.currentPreset.slopeWarning]
+              ])
+            ]),
+            vue.createElementVNode("view", { class: "input-group" }, [
+              vue.createElementVNode("text", { class: "label" }, "平整度预警值 (mm)"),
+              vue.withDirectives(vue.createElementVNode(
+                "input",
+                {
+                  class: "input",
+                  type: "digit",
+                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $data.currentPreset.flatnessWarning = $event),
+                  placeholder: "请输入平整度预警值"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vue.vModelText, $data.currentPreset.flatnessWarning]
+              ])
+            ])
+          ]),
+          vue.createElementVNode("view", { class: "modal-footer" }, [
+            vue.createElementVNode("button", {
+              class: "modal-btn cancel",
+              onClick: _cache[5] || (_cache[5] = (...args) => $options.closeModal && $options.closeModal(...args))
+            }, "取消"),
+            vue.createElementVNode("button", {
+              class: "modal-btn confirm",
+              onClick: _cache[6] || (_cache[6] = (...args) => $options.savePreset && $options.savePreset(...args))
+            }, "确定")
+          ])
+        ])
+      ])) : vue.createCommentVNode("v-if", true)
+    ]);
+  }
+  const PagesWarningPresetsWarningPresets = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "D:/nhuProject/智能靠尺/pages/warning-presets/warning-presets.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
   __definePage("pages/device/device", PagesDeviceDevice);
   __definePage("pages/about/about", PagesAboutAbout);
@@ -6680,6 +7059,7 @@ if (uni.restoreGlobal) {
   __definePage("pages/newProject/text/text", PagesNewProjectTextText);
   __definePage("pages/inProject/edit/edit", PagesInProjectEditEdit);
   __definePage("pages/newProject/csv/preview/preview", PagesNewProjectCsvPreviewPreview);
+  __definePage("pages/warning-presets/warning-presets", PagesWarningPresetsWarningPresets);
   const CONFIG_KEY = "app_config";
   const Config = {
     // 获取配置
@@ -6738,36 +7118,36 @@ if (uni.restoreGlobal) {
           if (Config.isFirstLaunch()) {
             await this.initSampleData();
             Config.markLaunched();
-            formatAppLog("log", "at App.vue:32", "示例数据初始化完成");
+            formatAppLog("log", "at App.vue:31", "示例数据初始化完成");
           }
-          formatAppLog("log", "at App.vue:35", "数据库初始化完成");
+          formatAppLog("log", "at App.vue:34", "数据库初始化完成");
           this.globalData.dbInitialized = true;
         } catch (error) {
-          formatAppLog("error", "at App.vue:39", "数据库初始化失败:", error);
+          formatAppLog("error", "at App.vue:38", "数据库初始化失败:", error);
         }
       },
       deleteTable(table) {
         let open = sqliteUtil.isOpen();
         if (open) {
           sqliteUtil.deleteTable(table).then((res) => {
-            this.showToast("删除表成功");
+            formatAppLog("log", "at App.vue:46", "删除表成功");
           }).catch((error) => {
-            formatAppLog("log", "at App.vue:50", "删除表失败", error);
+            formatAppLog("log", "at App.vue:49", "删除表失败", error);
           });
         } else {
-          this.showToast("数据库未打开");
+          formatAppLog("log", "at App.vue:52", "数据库未打开");
         }
       },
       openSQL() {
         return new Promise((resolve, reject) => {
           let open = sqliteUtil.isOpen();
-          formatAppLog("log", "at App.vue:59", "数据库状态", open ? "开启" : "关闭");
+          formatAppLog("log", "at App.vue:58", "数据库状态", open ? "开启" : "关闭");
           if (!open) {
             sqliteUtil.openSqlite().then((res) => {
-              formatAppLog("log", "at App.vue:63", "数据库已打开");
+              formatAppLog("log", "at App.vue:62", "数据库已打开");
               resolve(res);
             }).catch((error) => {
-              formatAppLog("log", "at App.vue:67", "数据库开启失败");
+              formatAppLog("log", "at App.vue:66", "数据库开启失败");
               reject(error);
             });
           } else {
@@ -6792,19 +7172,21 @@ if (uni.restoreGlobal) {
 					"project_status" TEXT NOT NULL,
 					"inspection_status" TEXT NOT NULL
 				`);
-          formatAppLog("log", "at App.vue:94", "项目表创建成功");
+          formatAppLog("log", "at App.vue:93", "项目表创建成功");
           await sqliteUtil.createTable("wall_data", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-					"project_id" INTEGER NOT NULL,
-					"section" TEXT,
-					"wall_name" TEXT NOT NULL,
-					"slope" TEXT,
-					"flatness" TEXT,
-					"image" TEXT,
-					"measurements" TEXT DEFAULT '[]',
-					FOREIGN KEY(project_id) REFERENCES project(id)
+                    "project_id" INTEGER NOT NULL,
+                    "section" TEXT NOT NULL,
+                    "wall_name" TEXT NOT NULL,
+                    "slope_value" TEXT,
+          			"slope_angle" TEXT,
+          			"slope_type" INTEGER,
+          			"flatness" TEXT,
+          			"image" TEXT,
+          			"measurements" TEXT DEFAULT '[]',
+          			FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:108", "墙体数据表创建成功");
+          formatAppLog("log", "at App.vue:109", "墙体数据表创建成功");
           await sqliteUtil.createTable("warning_settings", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 					"project_id" INTEGER NOT NULL,
@@ -6812,7 +7194,7 @@ if (uni.restoreGlobal) {
 					"flatness_warning" REAL,
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:118", "预警设置表创建成功");
+          formatAppLog("log", "at App.vue:119", "预警设置表创建成功");
           await sqliteUtil.createTable("sections", `
 					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 					"project_id" INTEGER NOT NULL,
@@ -6820,9 +7202,16 @@ if (uni.restoreGlobal) {
 					"sort_order" INTEGER,
 					FOREIGN KEY(project_id) REFERENCES project(id)
 				`);
-          formatAppLog("log", "at App.vue:128", "房间表创建成功");
+          formatAppLog("log", "at App.vue:129", "房间表创建成功");
+          await sqliteUtil.createTable("warning_presets", `
+					"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+					"name" TEXT NOT NULL,
+					"slope_warning" REAL,
+					"flatness_warning" REAL
+				`);
+          formatAppLog("log", "at App.vue:138", "预警预设表创建成功");
         } catch (error) {
-          formatAppLog("error", "at App.vue:131", "创建数据库表失败:", error);
+          formatAppLog("error", "at App.vue:141", "创建数据库表失败:", error);
           throw error;
         }
       },
@@ -6885,9 +7274,9 @@ if (uni.restoreGlobal) {
           }
           await this.insertWarningSettings(project1Id, 2, 3);
           await this.insertWarningSettings(project2Id, 1.8, 2.8);
-          formatAppLog("log", "at App.vue:214", "示例数据添加成功");
+          formatAppLog("log", "at App.vue:224", "示例数据添加成功");
         } catch (error) {
-          formatAppLog("error", "at App.vue:216", "添加示例数据失败:", error);
+          formatAppLog("error", "at App.vue:226", "添加示例数据失败:", error);
           throw error;
         }
       },

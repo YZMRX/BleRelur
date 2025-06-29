@@ -279,22 +279,20 @@ export default {
 						console.log(`服务${index + 1} UUID: ${service.uuid}`);
 					});
 					
-					// 获取第7和第8个服务
-					const service7 = res.services[6];  // 索引6对应第7个服务（坡度）
-					const service8 = res.services[7];  // 索引7对应第8个服务（平整度）
+					// 获取第7个服务
+					const service7 = res.services[6];  // 索引6对应第7个服务（用于所有数据传输）
 					
-					if (service7 && service8) {
+					if (service7) {
 						console.log('找到目标服务：', {
-							'坡度服务(7)': service7.uuid,
-							'平整度服务(8)': service8.uuid
+							'数据服务(7)': service7.uuid
 						});
 						
-						bleManager.setServiceId2(service7.uuid);   // 坡度服务 - serviceId2
-						bleManager.setServiceId(service8.uuid);    // 平整度服务 - serviceId
+						// 设置服务ID（使用serviceId2作为主服务ID）
+						bleManager.setServiceId2(service7.uuid);
 						
 						console.log('设置服务ID后的状态：', bleManager.getState());
 						
-						// 获取第7个服务（坡度）的特征值
+						// 获取服务的特征值
 						uni.getBLEDeviceCharacteristics({
 							deviceId,
 							serviceId: service7.uuid,
@@ -303,68 +301,34 @@ export default {
 									uuid: c.uuid,
 									properties: c.properties
 								}));
-								console.log('服务7（坡度）特征值列表：', charList);
+								console.log('服务7特征值列表：', charList);
 								
 								if (res.characteristics && res.characteristics.length > 0) {
-									const pdCharacteristic = res.characteristics[0];  // 使用第一个特征值
-									console.log('设置坡度特征值：', pdCharacteristic.uuid);
-									bleManager.setPdCharacteristicId(pdCharacteristic.uuid);
+									const dataCharacteristic = res.characteristics[0];  // 使用第一个特征值
+									console.log('设置数据特征值：', dataCharacteristic.uuid);
+									bleManager.setPdCharacteristicId(dataCharacteristic.uuid);
 									
-									// 获取第8个服务（平整度）的特征值
-									uni.getBLEDeviceCharacteristics({
-										deviceId,
-										serviceId: service8.uuid,
-										success: (res2) => {
-											const charList2 = res2.characteristics.map(c => ({
-												uuid: c.uuid,
-												properties: c.properties
-											}));
-											console.log('服务8（平整度）特征值列表：', charList2);
-											
-											if (res2.characteristics && res2.characteristics.length > 0) {
-												const pzdCharacteristic = res2.characteristics[0];  // 使用第一个特征值
-												console.log('设置平整度特征值：', pzdCharacteristic.uuid);
-												bleManager.setPzdCharacteristicId(pzdCharacteristic.uuid);
-												
-												console.log('最终蓝牙状态：', bleManager.getState());
-												
-												// 开启通知
-												this.enableNotify(deviceId, service7.uuid, pdCharacteristic.uuid);
-												this.enableNotify(deviceId, service8.uuid, pzdCharacteristic.uuid);
-												
-												setTimeout(() => {
-													uni.navigateBack();
-												}, 1000);
-											} else {
-												uni.showModal({
-													title: '连接失败',
-													content: '未找到平整度特征值',
-													showCancel: false
-												});
-											}
-										},
-										fail: (err) => {
-											console.error('获取平整度特征值失败', err);
-											uni.showModal({
-												title: '连接失败',
-												content: '获取平整度特征值失败',
-												showCancel: false
-											});
-										}
-									});
+									console.log('最终蓝牙状态：', bleManager.getState());
+									
+									// 开启通知
+									this.enableNotify(deviceId, service7.uuid, dataCharacteristic.uuid);
+									
+									setTimeout(() => {
+										uni.navigateBack();
+									}, 1000);
 								} else {
 									uni.showModal({
 										title: '连接失败',
-										content: '未找到坡度特征值',
+										content: '未找到数据特征值',
 										showCancel: false
 									});
 								}
 							},
 							fail: (err) => {
-								console.error('获取坡度特征值失败', err);
+								console.error('获取特征值失败', err);
 								uni.showModal({
 									title: '连接失败',
-									content: '获取坡度特征值失败',
+									content: '获取特征值失败',
 									showCancel: false
 								});
 							}
